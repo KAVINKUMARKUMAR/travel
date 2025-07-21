@@ -1,0 +1,113 @@
+/* Center page */
+.register-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f0f4f8;
+  padding: 20px;
+}
+
+/* Card container */
+.register-card {
+  display: flex;
+  max-width: 822px;
+  width: 100%;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+/* Left side - form */
+.register-left {
+  flex: 1;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.register-left h2 {
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.register-left p {
+  margin-bottom: 25px;
+  color: #666;
+  font-size: 15px;
+}
+
+.register-form label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #444;
+  margin-left: 4px;
+  gap: 2px;
+}
+
+.register-form input {
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  width: 100%;
+  outline: none;
+}
+
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  margin: 15px 0;
+  font-size: 13px;
+}
+
+.checkbox-group input {
+  margin-right: 8px;
+}
+
+.checkbox-group a {
+  color: #0077cc;
+  text-decoration: none;
+}
+
+.register-form button {
+  background-color: #00bcd4;
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background 0.3s;
+}
+
+.register-form button:hover {
+  background-color: #0097a7;
+}
+
+/* Right side - image */
+.register-right {
+  flex: 1;
+  background-color: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.register-right img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+#terms{
+    width: 10px;
+    margin-top: 13px;
+}
+#terms-login{
+    width: 10px;
+    margin-top: 13px;
+}
