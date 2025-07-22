@@ -1,0 +1,35 @@
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+  background: transparent;
+}
+
+.logo span {
+  color: #00bcd4;
+}
+
+.hero {
+  background: url('../assets/banner.jpg') no-repeat center center/cover;
+  height: 70vh;
+  text-align: center;
+  color: white;
+  padding-top: 100px;
+}
+
+.search-box {
+  margin-top: 20px;
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.destinations-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 20px;
+  padding: 20px;
+}

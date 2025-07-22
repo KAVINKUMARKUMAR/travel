@@ -53,7 +53,7 @@
   border: 1px solid #ccc;
   border-radius: 8px;
   font-size: 14px;
-  width: 100%;
+  width: 90%;
   outline: none;
 }
 
@@ -100,7 +100,7 @@
 
 .register-right img {
   width: 100%;
-  height: auto;
+  height: 100%;
   object-fit: cover;
 }
 #terms{
@@ -111,3 +111,17 @@
     width: 10px;
     margin-top: 13px;
 }
+@media (max-width: 768px) {
+  .register-card {
+    flex-direction: column;
+  }
+
+  .register-right {
+    display: none; /* Hide the image section on mobile */
+  }
+
+  .register-left {
+    padding: 30px 20px;
+  }
+}
+
