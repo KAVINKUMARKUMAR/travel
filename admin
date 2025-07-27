@@ -1,0 +1,778 @@
+admin pannel
+
+
+
+// AdminAddHotel.js
+import React, { useState } from 'react';
+import './HotelPage.css';
+
+const STATES = [
+  'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh',
+  'Goa', 'Gujarat', 'Haryana', 'Himachal Pradesh', 'Jharkhand', 'Karnataka',
+  'Kerala', 'Madhya Pradesh', 'Maharashtra', 'Manipur', 'Meghalaya',
+  'Mizoram', 'Nagaland', 'Odisha', 'Punjab', 'Rajasthan', 'Sikkim',
+  'Tamil Nadu', 'Telangana', 'Tripura', 'Uttar Pradesh', 'Uttarakhand', 'West Bengal'
+];
+
+const CITIES = [
+  'Chennai', 'Bangalore', 'Mumbai', 'Delhi', 'Hyderabad',
+  'Kolkata', 'Pune', 'Ahmedabad', 'Jaipur', 'Coimbatore'
+];
+
+
+const AMENITIES = [
+  'WiFi', 'Parking', 'AC', 'Restaurant', 'Pool', 'Gym', 'Spa', 'Bar'
+];
+
+const ROOM_TYPES = [
+  'Single',
+  'Double',
+  'Deluxe',
+  'Suite',
+  'Family',
+];
+
+export default function AdminAddHotel() {
+  // Hotel basic details
+  const [hotelName, setHotelName] = useState('');
+  const [address, setAddress] = useState('');
+  const [city, setCity] = useState('');
+  const [state, setState] = useState('');
+  const [starRating, setStarRating] = useState(3);
+  const [description, setDescription] = useState('');
+
+  // Images (max 5 image URLs)
+  const [images, setImages] = useState(['']);
+
+  // Amenities selected (Set for ease)
+  const [selectedAmenities, setSelectedAmenities] = useState(new Set());
+
+  // Rooms: array of objects { roomName, roomType, pricePerNight, maxGuests, roomImage }
+  const [rooms, setRooms] = useState([]);
+
+  // Room input form state for adding new room
+  const [roomForm, setRoomForm] = useState({
+    roomName: '',
+    roomType: '',
+    pricePerNight: '',
+    maxGuests: '',
+    roomImage: '',
+  });
+
+  // Handle toggle for amenities
+  const toggleAmenity = (amenity) => {
+    const newSet = new Set(selectedAmenities);
+    if(newSet.has(amenity)) {
+      newSet.delete(amenity);
+    } else {
+      newSet.add(amenity);
+    }
+    setSelectedAmenities(newSet);
+  };
+
+  // Image URL change handler
+  const handleImageChange = (idx, value) => {
+    const newImages = [...images];
+    newImages[idx] = value;
+    setImages(newImages);
+  };
+
+  // Add image input (max 5)
+  const addImageInput = () => {
+    if (images.length < 5) {
+      setImages([...images, '']);
+    }
+  };
+
+  // Remove image input (keeping at least 1)
+  const removeImageInput = (idx) => {
+    if (images.length === 1) return;
+    setImages(images.filter((_, i) => i !== idx));
+  };
+
+  // Room form input change handler
+  const handleRoomFormChange = (e) => {
+    const { name, value } = e.target;
+    setRoomForm(prev => ({ ...prev, [name]: value }));
+  };
+
+  // Add room handler
+  const addRoom = () => {
+    const { roomName, roomType, pricePerNight, maxGuests, roomImage } = roomForm;
+
+    if (!roomName.trim()) {
+      alert('Please enter room name');
+      return;
+    }
+    if (!roomType) {
+      alert('Please select room type');
+      return;
+    }
+    if (!(+pricePerNight > 0)) {
+      alert('Please enter a valid price per night');
+      return;
+    }
+    if (!(+maxGuests > 0)) {
+      alert('Please enter valid max guests');
+      return;
+    }
+    if (!roomImage.trim()) {
+      alert('Please enter room image URL');
+      return;
+    }
+
+    setRooms(prev => [
+      ...prev,
+      {
+        roomName: roomName.trim(),
+        roomType,
+        pricePerNight: Number(pricePerNight),
+        maxGuests: Number(maxGuests),
+        roomImage: roomImage.trim(),
+      }
+    ]);
+
+    setRoomForm({
+      roomName: '',
+      roomType: '',
+      pricePerNight: '',
+      maxGuests: '',
+      roomImage: '',
+    });
+  };
+
+  // Remove room handler
+  const removeRoom = (index) => {
+    setRooms(rooms.filter((_, i) => i !== index));
+  };
+
+  // Submit handler
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    // Validate some required fields
+    if (!hotelName.trim() || !address.trim() || !city.trim() || !state) {
+      alert('Please fill all required hotel details');
+      return;
+    }
+    if (images.some(img => !img.trim())) {
+      alert('Please remove or fill all image URLs');
+      return;
+    }
+    if (rooms.length === 0) {
+      alert('Please add at least one room');
+      return;
+    }
+
+    // Compose object (for demonstration)
+    const newHotel = {
+      hotelName: hotelName.trim(),
+      address: address.trim(),
+      city: city.trim(),
+      state,
+      starRating,
+      description: description.trim(),
+      images: images.map(i => i.trim()),
+      amenities: Array.from(selectedAmenities),
+      rooms,
+    };
+
+    alert('Hotel added successfully! See console for data.');
+    console.log(newHotel);
+
+    // Optional: reset form (commented out here)
+    // setHotelName('');
+    // setAddress('');
+    // setCity('');
+    // setState('');
+    // setStarRating(3);
+    // setDescription('');
+    // setImages(['']);
+    // setSelectedAmenities(new Set());
+    // setRooms([]);
+  };
+
+  return (
+    <div className="admin-container">
+      <h1 className="page-title">Add New Hotel</h1>
+      <p className="page-subtitle">Fill the details to list a new property.</p>
+      <form className="hotel-form" onSubmit={handleSubmit} noValidate>
+        {/* Hotel Basic Details */}
+        <section className="section card">
+          <h2 className="section-title">Hotel Basic Details</h2>
+
+          <label className="label" htmlFor="hotelName">Hotel Name *</label>
+          <input 
+            id="hotelName"  
+            name="hotelName"
+            type="text" 
+            className="input"
+            value={hotelName}
+            onChange={e => setHotelName(e.target.value)}
+            placeholder="Enter hotel name"
+            required
+          />
+
+          <label className="label" htmlFor="address">Address *</label>
+          <textarea
+            id="address"
+            name="address"
+            className="textarea"
+            value={address}
+            onChange={e => setAddress(e.target.value)}
+            placeholder="Enter full address"
+            rows={3}
+            required
+          />
+
+          <label className="label" htmlFor="city">City *</label>
+          <select
+            id="city"
+            name="city"
+            className="select"
+            value={city}
+            onChange={e => setCity(e.target.value)}
+            required
+          >
+            <option value="">Select city</option>
+            {CITIES.map((c) => (
+              <option key={c} value={c}>{c}</option>
+            ))}
+          </select>
+
+
+          <label className="label" htmlFor="state">State *</label>
+          <select
+            id="state"
+            name="state"
+            className="select"
+            value={state}
+            onChange={e => setState(e.target.value)}
+            required
+          >
+            <option value="">Select state</option>
+            {STATES.map((s) => (
+              <option key={s} value={s}>{s}</option>
+            ))}
+          </select>
+
+          <label className="label" htmlFor="starRating">Star Rating *</label>
+          <select 
+            id="starRating" 
+            name="starRating"
+            className="select"
+            value={starRating}
+            onChange={e => setStarRating(Number(e.target.value))}
+            required
+          >
+            {[1,2,3,4,5].map(n => (
+              <option key={n} value={n}>{n} Star{n > 1 ? 's' : ''}</option>
+            ))}
+          </select>
+
+          <label className="label" htmlFor="description">Description</label>
+          <textarea 
+            id="description" 
+            name="description"
+            className="textarea"
+            rows={4}
+            value={description}
+            onChange={e => setDescription(e.target.value)}
+            placeholder="Write a brief description"
+          />
+        </section>
+
+        {/* Image Uploads */}
+        <section className="section card">
+          <h2 className="section-title">Image Uploads</h2>
+          {images.map((url, idx) => (
+            <div key={idx} className="image-input-row">
+              <input
+                type="url"
+                className="input"
+                placeholder={`Image URL ${idx+1}`}
+                value={url}
+                onChange={e => handleImageChange(idx, e.target.value)}
+                maxLength={2083} // max URL length approximate
+                required
+              />
+              <button 
+                type="button"
+                className="remove-btn"
+                aria-label={`Remove image URL ${idx + 1}`}
+                onClick={() => removeImageInput(idx)}
+                disabled={images.length === 1}
+              >
+                ×
+              </button>
+            </div>
+          ))}
+          <button
+            type="button"
+            className="add-btn"
+            disabled={images.length >= 5}
+            onClick={addImageInput}
+          >
+            + Add Image
+          </button>
+        </section>
+
+        {/* Room Details */}
+        <section className="section card">
+          <h2 className="section-title">Room Details</h2>
+
+          <div className="room-inputs-row">
+            <div className="room-input-group">
+              <label className="label" htmlFor="roomName">Room Name</label>
+              <input
+                id="roomName"
+                name="roomName"
+                type="text"
+                className="input"
+                value={roomForm.roomName}
+                onChange={handleRoomFormChange}
+                placeholder="e.g. Deluxe Suite"
+              />
+            </div>
+            <div className="room-input-group">
+              <label className="label" htmlFor="roomType">Room Type</label>
+              <select
+                id="roomType"
+                name="roomType"
+                className="select"
+                value={roomForm.roomType}
+                onChange={handleRoomFormChange}
+              >
+                <option value="">Select Room Type</option>
+                {ROOM_TYPES.map(t => (
+                  <option key={t} value={t}>{t}</option>
+                ))}
+              </select>
+            </div>
+            <div className="room-input-group">
+              <label className="label" htmlFor="pricePerNight">Price per Night (₹)</label>
+              <input
+                id="pricePerNight"
+                name="pricePerNight"
+                type="number"
+                min="0"
+                className="input"
+                value={roomForm.pricePerNight}
+                onChange={handleRoomFormChange}
+                placeholder="0"
+              />
+            </div>
+            <div className="room-input-group">
+              <label className="label" htmlFor="maxGuests">Max Guests</label>
+              <input
+                id="maxGuests"
+                name="maxGuests"
+                type="number"
+                min="1"
+                className="input"
+                value={roomForm.maxGuests}
+                onChange={handleRoomFormChange}
+                placeholder="1"
+              />
+            </div>
+            <div className="room-input-group room-image-group">
+              <label className="label" htmlFor="roomImage">Room Image URL</label>
+              <input
+                id="roomImage"
+                name="roomImage"
+                type="url"
+                className="input"
+                value={roomForm.roomImage}
+                onChange={handleRoomFormChange}
+                placeholder="Image URL"
+              />
+            </div>
+            <div className="room-add-btn-wrap">
+              <button
+                type="button"
+                className="add-btn room-add-btn"
+                onClick={addRoom}
+                aria-label="Add Room"
+              >
+                + Add Room
+              </button>
+            </div>
+          </div>
+
+          {/* Rooms preview */}
+          <div className="rooms-preview">
+            {rooms.length === 0 ? (
+              <p className="no-rooms-text">No rooms added yet.</p>
+            ) : rooms.map((room, i) => (
+              <div key={i} className="room-preview-card">
+                <img
+                  src={room.roomImage || 'https://via.placeholder.com/100x70?text=No+Image'}
+                  alt={room.roomName}
+                  className="room-preview-image"
+                />
+                <div className="room-preview-info">
+                  <p><strong>{room.roomName}</strong></p>
+                  <p>{room.roomType}</p>
+                  <p>₹{room.pricePerNight.toLocaleString()} / night</p>
+                  <p>Max Guests: {room.maxGuests}</p>
+                </div>
+                <button
+                  type="button"
+                  className="remove-btn room-remove-btn"
+                  aria-label={`Remove room ${room.roomName}`}
+                  onClick={() => removeRoom(i)}
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Amenities */}
+        <section className="section card">
+          <h2 className="section-title">Amenities</h2>
+          <div className="amenities-checkboxes">
+            {AMENITIES.map((amenity) => (
+              <label key={amenity} className="amenity-label">
+                <input
+                  type="checkbox"
+                  checked={selectedAmenities.has(amenity)}
+                  onChange={() => toggleAmenity(amenity)}
+                />
+                {amenity}
+              </label>
+            ))}
+          </div>
+          <div className="amenities-selected">
+            {selectedAmenities.size === 0
+              ? <em>No amenities selected</em>
+              : Array.from(selectedAmenities).map(a => (
+                <span key={a} className="amenity-pill">{a}</span>
+              ))
+            }
+          </div>
+        </section>
+
+        {/* Submit Button */}
+        <button type="submit" className="submit-btn" aria-label="Save Hotel">
+          Save Hotel
+        </button>
+      </form>
+    </div>
+  );
+}
+
+
+
+
+
+
+
+/* AdminAddHotel.css */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
+.admin-container {
+  max-width: 900px;
+  margin: 36px auto;
+  padding: 24px 20px 40px;
+  background-color: #FAF3E0;
+  color: #2E2E2E;
+  font-family: 'Inter', sans-serif;
+  user-select: none;
+}
+
+.page-title {
+  font-size: 2.8rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: #FB8C00;
+}
+
+.page-subtitle {
+  font-size: 1.15rem;
+  font-weight: 500;
+  margin-bottom: 32px;
+  color: #555;
+}
+
+.hotel-form {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* Sections */
+.section {
+  background: #fff;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  padding: 24px 28px;
+}
+
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #2E2E2E;
+}
+
+/* Label and inputs */
+.label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #2E2E2E;
+}
+
+.input,
+.select,
+.textarea {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #fff;
+  color: #2E2E2E;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease;
+  font-family: inherit;
+}
+
+.input:focus,
+.select:focus,
+.textarea:focus {
+  border-color: #FB8C00;
+  outline: none;
+  box-shadow: 0 0 8px rgba(251, 140, 0, 0.3);
+}
+
+/* Textarea adjustments */
+.textarea {
+  resize: vertical;
+  min-height: 80px;
+  max-height: 220px;
+}
+
+/* Image Inputs Row */
+.image-input-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.image-input-row input[type="url"] {
+  flex: 1 1 auto;
+}
+
+/* Buttons */
+.add-btn,
+.remove-btn {
+  background-color: #FFA726;
+  border: none;
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+  border-radius: 6px;
+  padding: 8px 14px;
+  font-size: 18px;
+  line-height: 1;
+  min-width: 36px;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  transition: background-color 0.3s ease;
+}
+
+.add-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: #f0a857;
+}
+
+.add-btn:not(:disabled):hover,
+.remove-btn:hover {
+  background-color: #FB8C00;
+}
+
+.add-btn.room-add-btn {
+  min-width: auto;
+  padding: 10px 24px;
+  font-size: 16px;
+}
+
+/* Room section */
+.room-inputs-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 22px;
+  align-items: flex-end;
+}
+
+.room-input-group {
+  flex: 1 1 150px;
+  min-width: 130px;
+  display: flex;
+  flex-direction: column;
+}
+
+.room-image-group {
+  flex: 1 1 100%;
+  min-width: unset;
+}
+
+.room-add-btn-wrap {
+  display: flex;
+  align-items: flex-end;
+}
+
+/* Rooms preview */
+.rooms-preview {
+  margin-top: 28px;
+}
+
+.no-rooms-text {
+  color: #888;
+  font-style: italic;
+  user-select: text;
+}
+
+.room-preview-card {
+  display: flex;
+  align-items: center;
+  border-radius: 8px;
+  background: #FAF3E0;
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  position: relative;
+  box-shadow: 0 3px 10px rgba(251,140,0,0.15);
+}
+
+.room-preview-image {
+  width: 100px;
+  height: 70px;
+  border-radius: 6px;
+  object-fit: cover;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.room-preview-info {
+  margin-left: 16px;
+  flex-grow: 1;
+  color: #555;
+  user-select: text;
+}
+
+.room-preview-info p {
+  margin: 2px 0;
+  font-weight: 500;
+  color: #2E2E2E;
+}
+
+.room-remove-btn {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  min-width: auto;
+  padding: 2px 8px;
+  font-size: 22px;
+  line-height: 1;
+  font-weight: 600;
+  color: #FB8C00;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.room-remove-btn:hover {
+  color: #FFA726;
+}
+
+/* Amenities */
+.amenities-checkboxes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+}
+
+.amenity-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+  color: #555;
+  cursor: pointer;
+  user-select: none;
+}
+
+.amenity-label input[type="checkbox"] {
+  cursor: pointer;
+  accent-color: #FFA726;
+}
+
+/* Selected amenities as pills */
+.amenities-selected {
+  margin-top: 16px;
+  user-select: text;
+}
+
+.amenity-pill {
+  display: inline-block;
+  background-color: #FFF0E1;
+  color: #FB8C00;
+  font-weight: 600;
+  padding: 6px 14px;
+  margin: 6px 10px 6px 0;
+  border-radius: 20px;
+  font-size: 0.95rem;
+  box-shadow: 0 1px 6px rgba(251, 140, 0, 0.15);
+}
+
+/* Submit Button */
+.submit-btn {
+  width: 100%;
+  background-color: #FFA726;
+  color: #fff;
+  padding: 14px 0;
+  font-weight: 600;
+  font-size: 1.15rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  user-select: none;
+  box-shadow: 0 6px 18px rgba(251, 140, 0, 0.25);
+}
+
+.submit-btn:hover, 
+.submit-btn:focus {
+  background-color: #FB8C00;
+  outline: none;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .room-inputs-row {
+    flex-direction: column;
+  }
+  .room-image-group {
+    flex: 1 1 100%;
+  }
+  .room-add-btn-wrap {
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 520px) {
+  .admin-container {
+    padding: 16px 14px 40px;
+  }
+}
+
