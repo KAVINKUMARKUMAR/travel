@@ -1,0 +1,884 @@
+homepage
+
+
+// HotelPage.js
+import React, { useState } from 'react';
+import './HotelPage.css';
+import img from '../../media/clay-leconey-v3StntRA_yA-unsplash.jpg';
+
+
+const images = [
+  {
+    url: img,
+    alt: 'Coastal Grand OMR - Exterior and pool view',
+  },
+  {
+    url: img,
+    alt: 'Coastal Grand OMR - Lobby interior',
+  },
+  {
+    url: 'https://cf.bstatic.com/xdata/images/hotel/max1280x900/382798869.jpg?k=a8948f8e267fea21cabaad819edefe11ab54a51135591f318cc941970cb930c7&o=&hp=1',
+    alt: 'Coastal Grand OMR - Deluxe room',
+  },
+  {
+    url: 'https://cf.bstatic.com/xdata/images/hotel/max1280x900/382798880.jpg?k=fbacc9e0a93eae4447a2c6b2110ba2ff992182044182e34e550c62a65f108a60&o=&hp=1',
+    alt: 'Coastal Grand OMR - Restaurant dining',
+  },
+  {
+    url: 'https://cf.bstatic.com/xdata/images/hotel/max1280x900/382798889.jpg?k=e539df9a74e85bed3d4f28a5c90a2d88ee324e324caf4babf074fa7d5e2a7846&o=&hp=1',
+    alt: 'Coastal Grand OMR - Fitness center',
+  },
+];
+
+const amenities = [
+  { name: 'Free Wi-Fi', icon: '📶' },
+  { name: 'Air Conditioning', icon: '❄️' },
+  { name: 'Restaurant', icon: '🍽️' },
+  { name: 'Free Parking', icon: '🅿️' },
+  { name: 'Swimming Pool', icon: '🏊' },
+  { name: 'Fitness Center', icon: '🏋️' },
+];
+
+const roomTypes = [
+  {
+    id: 1,
+    name: 'Deluxe Room',
+    capacity: '2 Adults',
+    price: '₹4,500 / night',
+    img: 'https://cf.bstatic.com/xdata/images/hotel/max1280x900/382798869.jpg?k=a8948f8e267fea21cabaad819edefe11ab54a51135591f318cc941970cb930c7&o=&hp=1',
+  },
+  {
+    id: 2,
+    name: 'Executive Suite',
+    capacity: '2 Adults, 1 Child',
+    price: '₹7,200 / night',
+    img: 'https://cf.bstatic.com/xdata/images/hotel/max1280x900/382798880.jpg?k=fbacc9e0a93eae4447a2c6b2110ba2ff992182044182e34e550c62a65f108a60&o=&hp=1',
+  },
+  {
+    id: 3,
+    name: 'Family Room',
+    capacity: '4 Adults',
+    price: '₹9,800 / night',
+    img: 'https://cf.bstatic.com/xdata/images/hotel/max1280x900/382798898.jpg?k=8922bbe85ec0514ac60df9b7cc165108e6a2f5c96cdb06aa2859e1362a3a25f3&o=&hp=1',
+  },
+];
+
+const reviews = [
+  {
+    id: 1,
+    name: 'Anita R.',
+    rating: 9,
+    comment: 'Spacious rooms, friendly staff, and great location close to the IT corridor.',
+  },
+  {
+    id: 2,
+    name: 'Ramesh K.',
+    rating: 8,
+    comment: 'Comfortable stay with excellent amenities. Loved the pool and fitness center.',
+  },
+  {
+    id: 3,
+    name: 'Dilip S.',
+    rating: 8.5,
+    comment: 'Very clean and well-maintained hotel. Perfect for business travelers.',
+  },
+];
+
+export default function HotelPage() {
+  const [mainImageIndex, setMainImageIndex] = useState(0);
+
+  // Booking form state:
+  const [checkIn, setCheckIn] = useState('');
+  const [checkOut, setCheckOut] = useState('');
+  const [adults, setAdults] = useState(2);
+  const [children, setChildren] = useState(0);
+
+  const handlePrevImage = () => {
+    setMainImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+  };
+
+  const handleNextImage = () => {
+    setMainImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+  };
+
+  const handleThumbnailClick = (index) => {
+    setMainImageIndex(index);
+  };
+
+  return (
+    <div className="hotel-container">
+      {/* Image Gallery */}
+      <section className="hotel-gallery" aria-label="Hotel image gallery">
+        <div className="main-image-wrap">
+          <button
+            className="nav-arrow left-arrow"
+            aria-label="Previous Image"
+            onClick={handlePrevImage}
+            type="button"
+          >
+            ‹
+          </button>
+          <img
+            key={images[mainImageIndex].url}
+            src={images[mainImageIndex].url}
+            alt={images[mainImageIndex].alt}
+            className="main-image"
+          />
+          <button
+            className="nav-arrow right-arrow"
+            aria-label="Next Image"
+            onClick={handleNextImage}
+            type="button"
+          >
+            ›
+          </button>
+        </div>
+        <div className="thumbnail-row" role="list">
+          {images.map((img, idx) => (
+            <button
+              key={img.url}
+              className={`thumbnail-button ${
+                idx === mainImageIndex ? 'active' : ''
+              }`}
+              onClick={() => handleThumbnailClick(idx)}
+              type="button"
+              aria-label={`View image ${idx + 1}`}
+              role="listitem"
+            >
+              <img src={img.url} alt={img.alt} className="thumbnail-image" />
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <div className="hotel-content-wrapper">
+        <main className="hotel-main-content">
+          {/* Hotel Overview */}
+          <section className="hotel-overview">
+            <h1 className="hotel-title">Coastal Grand Chennai OMR</h1>
+            <div className="hotel-stars" aria-label="Hotel star rating">
+              {[...Array(4)].map((_, i) => (
+                <i key={i} className="star-icon" aria-hidden="true">
+                  ★
+                </i>
+              ))}
+            </div>
+            <address className="hotel-location">
+              <svg
+                className="location-icon"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="#FDD835"
+                aria-hidden="true"
+                focusable="false"
+              >
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM7 9a5 5 0 1 1 10 0c0 2.78-2.5 6.85-5 9.88C9.5 15.85 7 11.78 7 9z" />
+                <circle cx="12" cy="9" r="2.5" />
+              </svg>
+              Rajiv Gandhi IT Expressway, Sholinganallur, Chennai, Tamil Nadu 600119, India
+            </address>
+            <p className="hotel-description">
+              Located in the heart of Chennai’s IT corridor, Coastal Grand OMR
+              offers premium comforts, modern amenities, and swift access to
+              beaches and business hubs.
+            </p>
+          </section>
+
+          {/* Amenities */}
+          <section className="hotel-amenities">
+            <h2 className="section-title">Amenities</h2>
+            <ul className="amenities-list">
+              {amenities.map(({ name, icon }) => (
+                <li key={name} className="amenity-item" title={name} aria-label={name}>
+                  <span className="amenity-icon" aria-hidden="true">
+                    {icon}
+                  </span>
+                  <span className="amenity-name">{name}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+
+          {/* Room Types */}
+          <section className="hotel-rooms">
+            <h2 className="section-title">Room Types</h2>
+            <div className="room-cards">
+              {roomTypes.map(({ id, img, name, capacity, price }) => (
+                <article key={id} className="room-card" tabIndex="0" aria-label={`${name} for ${capacity}`}>
+                  <img className="room-image" src={img} alt={name} />
+                  <div className="room-details">
+                    <h3 className="room-name">{name}</h3>
+                    <p className="room-capacity">{capacity}</p>
+                    <p className="room-price">{price}</p>
+                    <button type="button" className="book-button">
+                      Book Now
+                    </button>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          {/* Map & Address */}
+          <section className="hotel-map-address">
+            <h2 className="section-title">Location & Map</h2>
+            <div className="map-container" aria-label="Hotel location on map">
+              <iframe
+                title="Coastal Grand OMR Location"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3890.083542316538!2d80.25685381509586!3d12.91734079106439!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a525daeafec3485%3A0x47941c071622b89f!2sCoastal%20Grand%20OMR!5e0!3m2!1sen!2sin!4v1690442520000!5m2!1sen!2sin"
+                width="100%"
+                height="280"
+                style={{ border: 0, borderRadius: '8px' }}
+                allowFullScreen=""
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              ></iframe>
+            </div>
+            <address className="address-text">
+              Coastal Grand OMR, Rajiv Gandhi IT Expressway, Sholinganallur,
+              Chennai - 600119, Tamil Nadu, India.
+              <br />
+              Near Major IT Parks, 7 Min from ECR Beaches.
+            </address>
+          </section>
+
+          {/* Reviews Summary */}
+          <section className="hotel-reviews">
+            <h2 className="section-title">Guest Reviews</h2>
+            <div className="reviews-summary" aria-label="Average guest rating">
+              <div className="average-rating">
+                <span className="rating-number">8.7</span>
+                <span className="rating-text">Excellent</span>
+              </div>
+            </div>
+            <ul className="reviews-list">
+              {reviews.map(({ id, name, rating, comment }) => (
+                <li key={id} className="review-item">
+                  <div className="review-header">
+                    <strong className="review-author">{name}</strong>
+                    <span className="review-stars" aria-label={`${rating} star rating`}>
+                      {[...Array(10)].map((_, i) => (
+                        <i
+                          key={i}
+                          className={`star-icon ${i < Math.round(rating) ? 'filled' : ''}`}
+                          aria-hidden="true"
+                        >
+                          ★
+                        </i>
+                      ))}
+                    </span>
+                  </div>
+                  <p className="review-comment">{comment}</p>
+                </li>
+              ))}
+            </ul>
+          </section>
+        </main>
+
+        {/* Booking Widget */}
+        <aside className="booking-widget" aria-label="Booking form">
+          <form onSubmit={(e) => e.preventDefault()} className="booking-form">
+            <h2 className="booking-title">Check Availability</h2>
+
+            <label htmlFor="check-in" className="booking-label">
+              Check-in
+            </label>
+            <input
+              id="check-in"
+              name="check-in"
+              type="date"
+              value={checkIn}
+              onChange={(e) => setCheckIn(e.target.value)}
+              className="booking-input"
+              required
+            />
+
+            <label htmlFor="check-out" className="booking-label">
+              Check-out
+            </label>
+            <input
+              id="check-out"
+              name="check-out"
+              type="date"
+              value={checkOut}
+              onChange={(e) => setCheckOut(e.target.value)}
+              className="booking-input"
+              required
+            />
+
+            <label htmlFor="adults" className="booking-label">
+              Adults
+            </label>
+            <select
+              id="adults"
+              name="adults"
+              value={adults}
+              onChange={(e) => setAdults(Number(e.target.value))}
+              className="booking-select"
+            >
+              {[...Array(5)].map((_, i) => (
+                <option key={i + 1} value={i + 1}>
+                  {i + 1}
+                </option>
+              ))}
+            </select>
+
+            <label htmlFor="children" className="booking-label">
+              Children
+            </label>
+            <select
+              id="children"
+              name="children"
+              value={children}
+              onChange={(e) => setChildren(Number(e.target.value))}
+              className="booking-select"
+            >
+              {[...Array(4)].map((_, i) => (
+                <option key={i} value={i}>
+                  {i}
+                </option>
+              ))}
+            </select>
+
+            <button type="submit" className="availability-button">
+              Check Availability
+            </button>
+          </form>
+        </aside>
+      </div>
+    </div>
+  );
+}
+
+
+
+
+/* HotelPage.css */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+.hotel-container {
+  padding: 20px;
+  background-color: #fffde7;
+  font-family: 'Poppins', sans-serif;
+  color: #333;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+/* ======== Image Gallery ======== */
+.hotel-gallery {
+  margin-bottom: 30px;
+  user-select: none;
+}
+
+.main-image-wrap {
+  position: relative;
+  max-height: 480px;
+  overflow: hidden;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.main-image {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 10px;
+  transition: opacity 0.4s ease;
+  object-fit: cover;
+  max-height: 480px;
+}
+
+.nav-arrow {
+  position: absolute;
+  top: 50%;
+  font-size: 2.8rem;
+  color: #fdd835;
+  background: rgba(255, 193, 7, 0.15);
+  border: none;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  cursor: pointer;
+  user-select: none;
+  transform: translateY(-50%);
+  outline-offset: 2px;
+  transition: background-color 0.3s ease, transform 0.15s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  line-height: 1;
+  font-weight: 600;
+}
+
+.nav-arrow:hover,
+.nav-arrow:focus {
+  background-color: #fdd835;
+  color: #333;
+  transform: translateY(-50%) scale(1.1);
+}
+
+.left-arrow {
+  left: 10px;
+}
+
+.right-arrow {
+  right: 10px;
+}
+
+.thumbnail-row {
+  margin-top: 12px;
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.thumbnail-button {
+  flex: 0 0 auto;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  padding: 2px;
+  background: transparent;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+}
+
+.thumbnail-button.active,
+.thumbnail-button:hover,
+.thumbnail-button:focus {
+  border-color: #fdd835;
+  outline: none;
+  transform: scale(1.05);
+}
+
+.thumbnail-image {
+  display: block;
+  width: 90px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+/* ======== Content Wrapper ======== */
+.hotel-content-wrapper {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+/* ======== Main Content ======== */
+.hotel-main-content {
+  flex: 1 1 720px;
+  min-width: 280px;
+}
+
+/* ======== Hotel Overview ======== */
+.hotel-title {
+  font-size: 2.25rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #111;
+}
+
+.hotel-stars {
+  margin-bottom: 10px;
+}
+
+.star-icon {
+  color: #fdd835;
+  font-size: 1.3rem;
+  margin-right: 2px;
+  user-select: none;
+  transition: color 0.3s ease;
+}
+
+.hotel-location {
+  display: flex;
+  align-items: center;
+  font-size: 0.95rem;
+  color: #555;
+  margin-bottom: 16px;
+  line-height: 1.3;
+  font-style: normal;
+}
+
+.hotel-location .location-icon {
+  width: 18px;
+  height: 18px;
+  margin-right: 6px;
+  flex-shrink: 0;
+}
+
+.hotel-description {
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #444;
+  max-width: 640px;
+}
+
+/* ======== Amenities ======== */
+.hotel-amenities {
+  margin-top: 36px;
+}
+
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 14px;
+  color: #111;
+}
+
+.amenities-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px 28px;
+}
+
+.amenity-item {
+  display: flex;
+  align-items: center;
+  font-size: 0.95rem;
+  color: #333;
+  cursor: default;
+  user-select: none;
+}
+
+.amenity-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #fdd835;
+  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  font-size: 1.3rem;
+  margin-right: 10px;
+  box-shadow: 0 1.5px 5px rgba(255 193 7 / 0.4);
+}
+
+/* ======== Room Types ======== */
+.hotel-rooms {
+  margin-top: 36px;
+}
+
+.room-cards {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.room-card {
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  width: 240px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  outline-offset: 2px;
+}
+
+.room-card:hover,
+.room-card:focus {
+  transform: scale(1.03);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+}
+
+.room-image {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  border-bottom: 1px solid #eee;
+  flex-shrink: 0;
+}
+
+.room-details {
+  padding: 12px 16px 16px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.room-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 6px;
+  color: #111;
+}
+
+.room-capacity {
+  font-size: 0.9rem;
+  color: #666;
+  margin: 0 0 10px;
+}
+
+.room-price {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fdd835;
+  margin-bottom: 14px;
+}
+
+.book-button {
+  background-color: #fdd835;
+  color: #111;
+  border: none;
+  padding: 10px 0;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  user-select: none;
+}
+
+.book-button:hover,
+.book-button:focus {
+  background-color: #ffc107;
+  transform: scale(1.05);
+  outline: none;
+}
+
+/* ======== Map & Address ======== */
+.hotel-map-address {
+  margin-top: 36px;
+  max-width: 720px;
+}
+
+.map-container {
+  margin-bottom: 14px;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+}
+
+.address-text {
+  font-size: 0.95rem;
+  color: #444;
+  line-height: 1.4;
+  font-style: normal;
+  max-width: 720px;
+}
+
+/* ======== Reviews Summary ======== */
+.hotel-reviews {
+  margin-top: 36px;
+  max-width: 720px;
+}
+
+.reviews-summary {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.average-rating {
+  background-color: #fdd835;
+  color: #111;
+  padding: 14px 22px;
+  border-radius: 10px;
+  display: inline-flex;
+  flex-direction: column;
+  width: 78px;
+  font-weight: 700;
+  text-align: center;
+  box-shadow: 0 3px 10px rgba(255 193 7 / 0.3);
+  user-select: none;
+}
+
+.rating-number {
+  font-size: 1.9rem;
+  line-height: 1;
+  margin-bottom: 4px;
+  font-family: 'Poppins', sans-serif;
+}
+
+.rating-text {
+  font-size: 1rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.reviews-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-width: 720px;
+}
+
+.review-item {
+  border-bottom: 1px solid #eee;
+  padding: 12px 0;
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.review-author {
+  font-weight: 600;
+  font-size: 1rem;
+  color: #111;
+}
+
+.review-stars {
+  user-select: none;
+  font-size: 1rem;
+  color: #fdd835;
+  white-space: nowrap;
+}
+
+.review-stars .star-icon {
+  margin-right: 1px;
+}
+
+.review-stars .star-icon.filled {
+  color: #fdd835;
+}
+
+.review-stars .star-icon:not(.filled) {
+  color: #ddd;
+}
+
+.review-comment {
+  font-size: 0.95rem;
+  color: #444;
+  line-height: 1.4;
+  max-width: 720px;
+}
+
+/* ======== Booking Widget ======== */
+.booking-widget {
+  position: sticky;
+  top: 20px;
+  width: 320px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  padding: 24px 20px;
+  height: fit-content;
+  flex-shrink: 0;
+  font-size: 1rem;
+  user-select: none;
+}
+
+.booking-title {
+  font-size: 1.6rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #111;
+  text-align: center;
+  user-select: text;
+}
+
+.booking-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.booking-label {
+  font-weight: 600;
+  color: #555;
+  user-select: text;
+}
+
+.booking-input,
+.booking-select {
+  padding: 8px 12px;
+  font-size: 1rem;
+  border: 1.5px solid #eee;
+  border-radius: 8px;
+  transition: border-color 0.3s ease;
+  user-select: text;
+}
+
+.booking-input:focus,
+.booking-select:focus {
+  outline: none;
+  border-color: #fdd835;
+  box-shadow: 0 0 7px rgba(253, 216, 53, 0.5);
+}
+
+.availability-button {
+  margin-top: 12px;
+  background-color: #fdd835;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 0;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #111;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  user-select: none;
+}
+
+.availability-button:hover,
+.availability-button:focus {
+  background-color: #ffc107;
+  transform: scale(1.05);
+  outline: none;
+}
+
+/* ======== Responsive ======== */
+@media (max-width: 1040px) {
+  .hotel-content-wrapper {
+    flex-direction: column;
+  }
+  .hotel-main-content {
+    width: 100%;
+    max-width: 100%;
+    order: 1;
+  }
+  .booking-widget {
+    position: relative;
+    top: auto;
+    width: 100%;
+    margin-top: 30px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  }
+}
+
+@media (max-width: 600px) {
+  .room-cards {
+    justify-content: center;
+  }
+  .room-card {
+    width: 100%;
+    max-width: 320px;
+  }
+  .thumbnail-image {
+    width: 70px;
+    height: 47px;
+  }
+  .nav-arrow {
+    width: 36px;
+    height: 36px;
+    font-size: 2rem;
+  }
+}
+
+
+
+
+
+
