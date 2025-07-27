@@ -1,0 +1,544 @@
+payment
+
+
+// PaymentPage.js
+import React, { useState } from 'react';
+import './HotelPage.css';
+
+export default function PaymentPage() {
+  // Static dummy booking and hotel data
+  const hotel = {
+    name: 'Coastal Grand Chennai OMR',
+    address: 'Rajiv Gandhi IT Expressway, Sholinganallur, Chennai, Tamil Nadu 600119, India',
+    stars: 4,
+    thumbnail:
+      'https://cf.bstatic.com/xdata/images/hotel/max1280x900/382798858.jpg?k=3e1acd5fe7f9a04007c2460881710de1d88ca864a0f84d96d5d82ab374818e4e&o=&hp=1',
+  };
+
+  const booking = {
+    roomType: 'Executive Suite',
+    checkIn: '2025-10-01',
+    checkOut: '2025-10-04',
+    guests: '2 Adults, 1 Child',
+    nights: 3,
+    bookingId: '#T98271X',
+    pricePerNight: 7200,
+    taxes: 864,
+  };
+
+  // Payment method state: 'upi', 'card', 'netbanking'
+  const [paymentMethod, setPaymentMethod] = useState('upi');
+
+  // Payment form inputs state
+  const [paymentInfo, setPaymentInfo] = useState({
+    upiId: '',
+    cardNumber: '',
+    cardExpiry: '',
+    cardCVV: '',
+    netBank: '',
+    billingName: '',
+    email: '',
+    phone: '',
+  });
+
+  const handlePaymentMethodChange = (e) => {
+    setPaymentMethod(e.target.value);
+    // Reset payment fields when method changes
+    setPaymentInfo((prev) => ({
+      ...prev,
+      upiId: '',
+      cardNumber: '',
+      cardExpiry: '',
+      cardCVV: '',
+      netBank: '',
+    }));
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setPaymentInfo((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const totalAmount = booking.pricePerNight * booking.nights + booking.taxes;
+
+  const formatterDate = new Intl.DateTimeFormat('en-US', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  });
+  const checkInFormatted = formatterDate.format(new Date(booking.checkIn));
+  const checkOutFormatted = formatterDate.format(new Date(booking.checkOut));
+
+  const handlePayNow = (e) => {
+    e.preventDefault();
+    // Simple alert on pay now
+    alert('Payment Successful!');
+  };
+
+  return (
+    <div className="payment-container">
+      {/* Hotel Overview */}
+      <section className="hotel-info" aria-label="Hotel information">
+        <img
+          src={hotel.thumbnail}
+          alt={`Thumbnail of ${hotel.name}`}
+          className="hotel-thumbnail"
+        />
+        <div className="hotel-details">
+          <h1 className="hotel-name">{hotel.name}</h1>
+          <div
+            className="hotel-stars"
+            aria-label={`${hotel.stars} star rating`}
+            role="img"
+          >
+            {[...Array(hotel.stars)].map((_, i) => (
+              <span key={i} className="star-icon" aria-hidden="true">
+                ★
+              </span>
+            ))}
+          </div>
+          <address className="hotel-address">{hotel.address}</address>
+        </div>
+      </section>
+
+      {/* Main content: Two columns on desktop, single column on mobile */}
+      <form className="payment-main" onSubmit={handlePayNow} noValidate>
+        {/* Booking Summary */}
+        <section className="payment-summary" aria-label="Booking summary">
+          <h2 className="section-title">Booking Summary</h2>
+          <p>
+            <strong>Room Type:</strong> {booking.roomType}
+          </p>
+          <p>
+            <strong>Check-in:</strong> {checkInFormatted}
+          </p>
+          <p>
+            <strong>Check-out:</strong> {checkOutFormatted}
+          </p>
+          <p>
+            <strong>Guests:</strong> {booking.guests}
+          </p>
+          <p>
+            <strong>Total Nights:</strong> {booking.nights}
+          </p>
+          <p>
+            <strong>Booking ID:</strong> {booking.bookingId}
+          </p>
+        </section>
+
+        {/* Payment Breakdown */}
+        <section className="payment-summary payment-breakdown" aria-label="Payment breakdown">
+          <h2 className="section-title">Payment Breakdown</h2>
+          <p>
+            <strong>Price per Night:</strong> ₹{booking.pricePerNight.toLocaleString()}
+          </p>
+          <p>
+            <strong>Nights:</strong> {booking.nights}
+          </p>
+          <p>
+            <strong>Taxes:</strong> ₹{booking.taxes.toLocaleString()}
+          </p>
+          <p className="total-amount">
+            <strong>Total:</strong> ₹{totalAmount.toLocaleString()}
+          </p>
+        </section>
+
+        {/* Payment Methods */}
+        <section className="payment-methods" aria-label="Payment method selection">
+          <h2 className="section-title">Payment Method</h2>
+          <div className="method-options">
+            <label>
+              <input
+                type="radio"
+                name="paymentMethod"
+                value="upi"
+                checked={paymentMethod === 'upi'}
+                onChange={handlePaymentMethodChange}
+              />
+              UPI
+            </label>
+            <label>
+              <input
+                type="radio"
+                name="paymentMethod"
+                value="card"
+                checked={paymentMethod === 'card'}
+                onChange={handlePaymentMethodChange}
+              />
+              Credit / Debit Card
+            </label>
+            <label>
+              <input
+                type="radio"
+                name="paymentMethod"
+                value="netbanking"
+                checked={paymentMethod === 'netbanking'}
+                onChange={handlePaymentMethodChange}
+              />
+              Net Banking
+            </label>
+          </div>
+
+          {/* Conditional Inputs based on payment method */}
+          {paymentMethod === 'upi' && (
+            <div className="payment-input-group">
+              <label htmlFor="upiId">UPI ID</label>
+              <input
+                type="text"
+                id="upiId"
+                name="upiId"
+                value={paymentInfo.upiId}
+                onChange={handleInputChange}
+                placeholder="example@bank"
+                required
+              />
+            </div>
+          )}
+
+          {paymentMethod === 'card' && (
+            <>
+              <div className="payment-input-group">
+                <label htmlFor="cardNumber">Card Number</label>
+                <input
+                  type="text"
+                  id="cardNumber"
+                  name="cardNumber"
+                  value={paymentInfo.cardNumber}
+                  onChange={handleInputChange}
+                  placeholder="1234 5678 9012 3456"
+                  maxLength="19"
+                  required
+                />
+              </div>
+              <div className="payment-inline-group">
+                <div className="payment-input-group">
+                  <label htmlFor="cardExpiry">Expiry (MM/YY)</label>
+                  <input
+                    type="text"
+                    id="cardExpiry"
+                    name="cardExpiry"
+                    value={paymentInfo.cardExpiry}
+                    onChange={handleInputChange}
+                    placeholder="MM/YY"
+                    maxLength="5"
+                    required
+                  />
+                </div>
+                <div className="payment-input-group">
+                  <label htmlFor="cardCVV">CVV</label>
+                  <input
+                    type="password"
+                    id="cardCVV"
+                    name="cardCVV"
+                    value={paymentInfo.cardCVV}
+                    onChange={handleInputChange}
+                    placeholder="123"
+                    maxLength="3"
+                    required
+                  />
+                </div>
+              </div>
+            </>
+          )}
+
+          {paymentMethod === 'netbanking' && (
+            <div className="payment-input-group">
+              <label htmlFor="netBank">Select Bank</label>
+              <select
+                id="netBank"
+                name="netBank"
+                value={paymentInfo.netBank}
+                onChange={handleInputChange}
+                required
+              >
+                <option value="">-- Choose Bank --</option>
+                <option value="state-bank">State Bank of India</option>
+                <option value="hdfc">HDFC Bank</option>
+                <option value="icici">ICICI Bank</option>
+                <option value="axis">Axis Bank</option>
+                <option value="kotak">Kotak Mahindra Bank</option>
+              </select>
+            </div>
+          )}
+        </section>
+
+        {/* Billing Information */}
+        <section className="billing-info" aria-label="Billing information">
+          <h2 className="section-title">Billing Information</h2>
+          <div className="payment-input-group">
+            <label htmlFor="billingName">Name on Card / UPI</label>
+            <input
+              type="text"
+              id="billingName"
+              name="billingName"
+              value={paymentInfo.billingName}
+              onChange={handleInputChange}
+              placeholder="Full Name"
+              required
+              autoComplete="name"
+            />
+          </div>
+          <div className="payment-input-group">
+            <label htmlFor="email">Email</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={paymentInfo.email}
+              onChange={handleInputChange}
+              placeholder="email@example.com"
+              required
+              autoComplete="email"
+            />
+          </div>
+          <div className="payment-input-group">
+            <label htmlFor="phone">Phone Number</label>
+            <input
+              type="tel"
+              id="phone"
+              name="phone"
+              value={paymentInfo.phone}
+              onChange={handleInputChange}
+              placeholder="+91 98765 43210"
+              required
+              autoComplete="tel"
+            />
+          </div>
+        </section>
+
+        {/* Pay Now Button */}
+        <section className="pay-now-section">
+          <button type="submit" className="pay-button" aria-label="Pay Now">
+            Pay Now
+          </button>
+        </section>
+      </form>
+    </div>
+  );
+}
+
+
+
+
+
+
+
+
+/* PaymentPage.css */
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+.payment-container {
+  padding: 20px;
+  background-color: #fffde7;
+  font-family: 'Poppins', sans-serif;
+  color: #333;
+  max-width: 1200px;
+  margin: 0 auto;
+  user-select: none;
+}
+
+/* Hotel Overview */
+.hotel-info {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+
+.hotel-thumbnail {
+  width: 160px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  flex-shrink: 0;
+}
+
+.hotel-details {
+  flex: 1;
+  min-width: 260px;
+}
+
+.hotel-name {
+  font-size: 2rem;
+  font-weight: 600;
+  margin: 0 0 6px 0;
+  color: #212121;
+}
+
+.hotel-stars {
+  color: #ffc107;
+  font-size: 1.2rem;
+  margin-bottom: 8px;
+  user-select: none;
+}
+
+.hotel-address {
+  font-style: normal;
+  color: #555;
+  font-size: 0.95rem;
+  line-height: 1.3;
+}
+
+/* Main form area - two columns on desktop */
+.payment-main {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+}
+
+@media (max-width: 768px) {
+  .payment-main {
+    display: block;
+  }
+}
+
+/* Sections */
+section {
+  background: #fff;
+  padding: 20px 24px;
+  border-radius: 10px;
+  box-shadow: 0 3px 18px rgba(0, 0, 0, 0.07);
+  user-select: text;
+}
+
+.section-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-bottom: 18px;
+  color: #212121;
+  border-bottom: 2px solid #ffc107;
+  padding-bottom: 6px;
+  user-select: text;
+}
+
+/* Booking Summary and Payment Breakdown */
+.payment-summary p {
+  margin: 8px 0;
+  font-size: 1rem;
+  color: #333;
+}
+
+.total-amount {
+  font-weight: 700;
+  font-size: 1.35rem;
+  color: #ffc107;
+  margin-top: 12px;
+  user-select: text;
+}
+
+/* Payment Methods */
+.payment-methods {
+  display: flex;
+  flex-direction: column;
+}
+
+.method-options {
+  display: flex;
+  gap: 26px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+
+.method-options label {
+  font-weight: 500;
+  cursor: pointer;
+  color: #212121;
+  user-select: none;
+}
+
+.method-options input[type="radio"] {
+  margin-right: 8px;
+  accent-color: #ffc107;
+  cursor: pointer;
+}
+
+/* Payment Input Groups */
+.payment-input-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+}
+
+.payment-input-group label {
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #444;
+}
+
+.payment-input-group input,
+.payment-input-group select {
+  padding: 10px 14px;
+  font-size: 1rem;
+  border: 1.5px solid #eee;
+  border-radius: 8px;
+  transition: border-color 0.3s ease;
+  outline-offset: 2px;
+}
+
+.payment-input-group input:focus,
+.payment-input-group select:focus {
+  outline: none;
+  border-color: #fdd835;
+  box-shadow: 0 0 8px rgba(253, 216, 53, 0.45);
+}
+
+.payment-inline-group {
+  display: flex;
+  gap: 16px;
+}
+
+@media (max-width: 520px) {
+  .payment-inline-group {
+    flex-direction: column;
+  }
+}
+
+/* Pay Now button */
+.pay-now-section {
+  grid-column: span 2;
+  text-align: center;
+  margin-top: 12px;
+}
+
+@media (max-width: 768px) {
+  .pay-now-section {
+    grid-column: auto;
+  }
+}
+
+.pay-button {
+  background-color: #ffc107;
+  color: #212121;
+  padding: 14px 36px;
+  font-weight: 700;
+  font-size: 1.2rem;
+  border-radius: 8px;
+  border: none;
+  box-shadow: 0 6px 18px rgba(255, 193, 7, 0.4);
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  user-select: none;
+  min-width: 160px;
+}
+
+.pay-button:hover,
+.pay-button:focus {
+  background-color: #fdd835;
+  outline: none;
+  transform: scale(1.05);
+}
+
+/* Accessibility and Misc */
+input::placeholder {
+  color: #999;
+}
+
+select {
+  cursor: pointer;
+}
+
+
+
