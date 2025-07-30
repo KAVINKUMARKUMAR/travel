@@ -1,0 +1,99 @@
+Create a single-page Admin Panel component in ReactJS (in a `.js` file) with a separate `.css` file. Do not use Tailwind or any CSS framework.
+
+The Admin Panel should contain:
+
+1. **Top Navigation Bar**:
+   - Logo or “Admin Dashboard” title
+   - Admin name on the right (e.g., "Hi, Admin")
+   - Logout button
+
+2. **Sidebar Navigation** (collapsible if possible):
+   - Dashboard
+   - Manage Hotel Owners
+   - Manage Users
+   - Bookings
+   - Payments
+   - Subscription Plans
+   - CMS (Content Management)
+   - Settings
+
+3. **Main Content Area** (show Dashboard by default):
+   - 4 Stat Cards:
+     - Total Users
+     - Total Hotel Owners
+     - Total Bookings
+     - Total Revenue
+   - Recent Bookings Table:
+     - Columns: Booking ID, Hotel Name, Customer Name, Check-in, Check-out, Status
+   - Line Chart (Monthly Bookings Overview)
+     - Use Chart.js or placeholder div
+   - Recent Alerts Section (example: “Room booked by Raju in Taj Hotel”)
+
+4. **Functional Requirements**:
+   - Use `useState()` to store sample booking/user data
+   - Use `useEffect()` to simulate API calls (with setTimeout)
+   - Sidebar menu click should change the content (use basic `useState` tab switching)
+
+5. **Design Instructions**:
+   - Use professional fonts and spacing
+   - Orange-yellowish primary theme
+   - Shadowed cards, hover effects
+   - Sticky navbar and sidebar
+   - Responsive layout using flex/grid
+   - Separate `.css` file with proper class names and reusable styles
+
+This should result in a realistic admin interface like a SaaS dashboard with good UI and dummy interactivity.
+
+
+
+
+
+
+
+
+
+
+
+Create a single-page Hotel Owner Panel component using ReactJS in a `.js` file and styling in a separate `.css` file.
+
+The component should act as a dashboard for hotel owners and include:
+
+1. **Top Navigation Bar**:
+   - Logo or “Hotel Owner Panel”
+   - Owner Name with dropdown menu (Profile, Logout)
+   - Notification icon (with dummy count)
+
+2. **Sidebar Navigation**:
+   - My Hotels
+   - Add Hotel
+   - Booking Requests
+   - Earnings Report
+   - Feedbacks
+   - Subscription
+
+3. **Main Content Area**:
+   - Stat Cards (horizontal or grid):
+     - Total Hotels Listed
+     - Total Bookings
+     - This Month's Revenue
+     - Active Plan (Basic / Premium)
+   - Hotel Table:
+     - Hotel Name, Location, Price per night, Rooms available, Status (active/inactive)
+   - Booking Notifications:
+     - Show recent 3 bookings with hotel name, user name, booking date
+   - Subscription Plan Card:
+     - Plan Name, Expiry Date, Upgrade Button
+
+4. **Functionality**:
+   - Use `useState()` for mock data of hotels and bookings
+   - `useEffect()` to simulate loading
+   - Add dummy interaction like “Click Add Hotel” → alert or change view
+
+5. **Design Style**:
+   - Professional, modern look with orange/yellow primary color
+   - Sidebar + navbar layout
+   - Box shadows, rounded corners, hover transitions
+   - Icons for each sidebar item (can be placeholders)
+   - Fully responsive layout
+
+Also, use clean CSS in a separate file. No frameworks allowed. Ensure all class names match between `.js` and `.css`.
