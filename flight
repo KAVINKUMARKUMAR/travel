@@ -1,0 +1,3291 @@
+import React, { useState } from "react";
+import "./Login.css";
+// For icons: If using Heroicons or FontAwesome, ensure you have them installed in your project.
+import { FaPlaneDeparture, FaPlaneArrival, FaCalendarAlt, FaUserFriends, FaChevronRight, FaSuitcase, FaMoneyCheckAlt, FaRegCreditCard, FaCheckCircle, FaHeadset, FaTicketAlt, FaShieldAlt, FaMobileAlt, FaSearch, FaComments } from "react-icons/fa";
+
+const offers = [
+  {
+    img: "https://seeklogo.com/images/I/indigo-airlines-logo-17524D10F4-seeklogo.com.png",
+    title: "IndiGo Special Fares",
+    desc: "Save up to 30% off on return flights this summer!",
+    cta: "Book Now"
+  },
+  {
+    img: "https://seeklogo.com/images/V/vistara-logo-9D22CEA29D-seeklogo.com.png",
+    title: "Free Seat Upgrade",
+    desc: "Complimentary seats on Vistara select routes.",
+    cta: "Upgrade Today"
+  },
+  {
+    img: "https://seeklogo.com/images/A/air-india-logo-8BEA9F6CA0-seeklogo.com.png",
+    title: "Air India Baggage Offer",
+    desc: "Extra 10kg luggage free on all flights!",
+    cta: "See Offer"
+  },
+  {
+    img: "https://seeklogo.com/images/S/spicejet-logo-F7E5A4677A-seeklogo.com.png",
+    title: "SpiceJet Flash Sale",
+    desc: "Flights starting at just ₹1,799. Limited seats.",
+    cta: "Grab Deal"
+  },
+  {
+    img: "https://seeklogo.com/images/A/airasia-logo-307D41BA03-seeklogo.com.png",
+    title: "Airasia Combo Meals",
+    desc: "Enjoy complimentary gourmet meals on board.",
+    cta: "Add Meals"
+  },
+  {
+    img: "https://seeklogo.com/images/Q/quickjet-logo-428E23FA15-seeklogo.com.png",
+    title: "QuickJet Cashback",
+    desc: "Up to ₹2000 instant cashback—today only!",
+    cta: "Avail Now"
+  }
+];
+
+const howItWorks = [
+  {
+    icon: <FaSearch />,
+    label: "Enter travel info",
+    desc: "Provide journey details & preferences."
+  },
+  {
+    icon: <FaPlaneDeparture />,
+    label: "Compare flights",
+    desc: "Browse flights from 50+ airlines instantly."
+  },
+  {
+    icon: <FaSuitcase />,
+    label: "Choose airline",
+    desc: "Pick your airline and fare class."
+  },
+  {
+    icon: <FaUserFriends />,
+    label: "Passenger info",
+    desc: "Fill traveler details securely."
+  },
+  {
+    icon: <FaMoneyCheckAlt />,
+    label: "Pay & download ticket",
+    desc: "Pay safely & get instant tickets."
+  }
+];
+
+const whyBookWithUs = [
+  {
+    icon: <FaRegCreditCard />,
+    title: "Transparent Pricing",
+    desc: "No hidden fees, ever—see full cost upfront."
+  },
+  {
+    icon: <FaCheckCircle />,
+    title: "Fast Refunds",
+    desc: "Cancellations processed in hours, not weeks."
+  },
+  {
+    icon: <FaTicketAlt />,
+    title: "Seat Selection",
+    desc: "Pick preferred seats on most flights."
+  },
+  {
+    icon: <FaShieldAlt />,
+    title: "Travel Insurance",
+    desc: "Comprehensive coverage at checkout."
+  },
+  {
+    icon: <FaMobileAlt />,
+    title: "Mobile App Access",
+    desc: "Book & manage trips on our modern app."
+  },
+  {
+    icon: <FaPlaneArrival />,
+    title: "Real-time Tracking",
+    desc: "Check flight status & alerts in real time."
+  }
+];
+
+const trustIndicators = [
+  { icon: <FaRegCreditCard />, text: "Verified Payments" },
+  { icon: <FaHeadset />, text: "24x7 Support" },
+  { icon: <FaCheckCircle />, text: "15M+ Happy Customers" },
+  { icon: <FaTicketAlt />, text: "Instant Ticket Confirmation" }
+];
+
+export default function FlightBooking() {
+  const [form, setForm] = useState({
+    from: "",
+    to: "",
+    depart: "",
+    return: "",
+    passengers: 1,
+    cls: "Economy"
+  });
+
+  const handleInput = e => {
+    const { name, value } = e.target;
+    setForm(f => ({ ...f, [name]: value }));
+  };
+
+  return (
+    <div className="flightbooking-bg">
+      <div className="flightbooking-container">
+        {/* FLIGHT SEARCH FORM */}
+        <section className="search-section fade-in">
+          <form className="flight-search-form">
+            <div className="form-row">
+              <div className="input-group">
+                <FaPlaneDeparture className="input-icon" />
+                <input
+                  name="from"
+                  value={form.from}
+                  onChange={handleInput}
+                  type="text"
+                  placeholder="From"
+                  autoComplete="off"
+                />
+              </div>
+              <div className="input-group">
+                <FaPlaneArrival className="input-icon" />
+                <input
+                  name="to"
+                  value={form.to}
+                  onChange={handleInput}
+                  type="text"
+                  placeholder="To"
+                  autoComplete="off"
+                />
+              </div>
+              <div className="input-group">
+                <FaCalendarAlt className="input-icon" />
+                <input
+                  name="depart"
+                  value={form.depart}
+                  onChange={handleInput}
+                  type="date"
+                  placeholder="Departure"
+                />
+              </div>
+              <div className="input-group">
+                <FaCalendarAlt className="input-icon" />
+                <input
+                  name="return"
+                  value={form.return}
+                  onChange={handleInput}
+                  type="date"
+                  placeholder="Return (optional)"
+                />
+              </div>
+            </div>
+            <div className="form-row">
+              <div className="input-group small">
+                <FaUserFriends className="input-icon" />
+                <input
+                  type="number"
+                  min={1}
+                  max={8}
+                  name="passengers"
+                  value={form.passengers}
+                  onChange={handleInput}
+                  placeholder="Passengers"
+                />
+              </div>
+              <div className="input-group small">
+                <FaSuitcase className="input-icon" />
+                <select
+                  name="cls"
+                  value={form.cls}
+                  onChange={handleInput}
+                  placeholder="Class"
+                >
+                  <option>Economy</option>
+                  <option>Premium Economy</option>
+                  <option>Business</option>
+                  <option>First</option>
+                </select>
+              </div>
+              <button className="gradient-btn search-btn" type="submit">
+                <FaSearch /> Search Flights
+              </button>
+            </div>
+          </form>
+        </section>
+
+        {/* OFFERS CAROUSEL */}
+        <section className="offers-section slide-in">
+          <h2>Exclusive Offers</h2>
+          <div className="offers-carousel">
+            {offers.map((offer, idx) => (
+              <div className="offer-card" key={idx}>
+                <img className="offer-img" src={offer.img} alt="airline logo" />
+                <div className="offer-text">
+                  <h4>{offer.title}</h4>
+                  <p>{offer.desc}</p>
+                  <button className="gradient-btn">
+                    {offer.cta} <FaChevronRight style={{verticalAlign: "middle"}}/>
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* HOW IT WORKS */}
+        <section className="hiw-section fade-up">
+          <h2>How It Works</h2>
+          <div className="hiw-timeline">
+            {howItWorks.map((step, idx) => (
+              <div className="hiw-step" key={idx}>
+                <div className="hiw-icon">{step.icon}</div>
+                <div className="hiw-label">{step.label}</div>
+                <div className="hiw-desc">{step.desc}</div>
+                {idx < howItWorks.length - 1 && <span className="timeline-bar"></span>}
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* WHY BOOK WITH US */}
+        <section className="why-section fade-in">
+          <h2>Why Book With Us?</h2>
+          <div className="why-cards">
+            {whyBookWithUs.map((item, i) => (
+              <div className="why-card" key={i}>
+                <div className="why-icon">{item.icon}</div>
+                <div className="why-title">{item.title}</div>
+                <div className="why-desc">{item.desc}</div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* TRUST INDICATORS */}
+        <section className="trust-section fade-in">
+          <div className="trust-indicators">
+            {trustIndicators.map((trust, idx) => (
+              <div className="trust-item" key={idx}>
+                <div className="trust-icon">{trust.icon}</div>
+                <span>{trust.text}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* SUPPORT CTA */}
+        <section className="support-section">
+          <button className="gradient-btn support-btn">
+            <FaHeadset /> Talk to Travel Expert
+          </button>
+          <div className="chatbot-fab" title="Need help?">
+            <FaComments />
+          </div>
+        </section>
+      </div>
+    </div>
+  );
+}
+
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Poppins:wght@500;700&family=Roboto:wght@400;700&display=swap');
+
+.flightbooking-bg {
+  background: linear-gradient(120deg, #5d8efc 0%, #b99cff 100%);
+  min-height: 100vh;
+  font-family: 'Poppins', 'Inter', 'Roboto', sans-serif;
+  padding: 0;
+  margin: 0;
+}
+
+.flightbooking-container {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 36px 18px 42px 18px;
+}
+
+/* -------- SEARCH FORM -------- */
+.search-section {
+  background: #fff;
+  border-radius: 28px;
+  padding: 36px 28px 24px 28px;
+  box-shadow: 0 4px 24px 0 rgb(102 68 255 / 7%), 0 1.5px 2px 0 rgb(50 48 80 / 7%);
+  margin-bottom: 36px;
+  animation: fadeIn 1s cubic-bezier(.47,.87,.69,.98);
+}
+
+.flight-search-form {
+  display: grid;
+  grid-template-rows: auto auto;
+  row-gap: 18px;
+  column-gap: 0;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 18px;
+  margin-bottom: 0;
+}
+
+.input-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: #f5f6fa;
+  border-radius: 18px;
+  box-shadow: 0 2px 8px 0 rgb(102 68 255 / 2%);
+}
+.input-group input,
+.input-group select {
+  width: 100%;
+  padding: 13px 14px 13px 43px;
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  border-radius: 18px;
+  background: transparent;
+  color: #463477;
+}
+.input-group input[type="date"]::-webkit-input-placeholder { color: #b8acf0; }
+.input-group input[type="date"]:not(:focus):not(:valid) {
+  color: #b8acf0;
+}
+.input-group select {
+  cursor: pointer;
+}
+.input-group .input-icon {
+  position: absolute;
+  left: 15px;
+  font-size: 1.13rem;
+  color: #8f81f3;
+  opacity: 0.86;
+}
+
+.input-group.small { max-width: 180px; }
+
+.search-btn {
+  grid-column: span 2;
+  margin-left: auto;
+  margin-right: 0;
+  min-width: 190px;
+  padding: 13px 18px;
+  font-size: 1.08em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+}
+
+/* -------- OFFERS CAROUSEL ------ */
+.offers-section {
+  margin: 34px 0 22px 0;
+  animation: slideIn 1s cubic-bezier(.38,0,.61,1.03);
+}
+.offers-section h2 { font-weight: 600; margin-bottom: 14px; }
+.offers-carousel {
+  display: flex;
+  overflow-x: auto;
+  gap: 22px;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: thin;
+  padding-bottom: 8px;
+}
+.offer-card {
+  min-width: 285px;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 6px 24px 0 rgb(101 112 255 / 14%);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 26px 17px 17px 17px;
+  gap: 18px;
+  scroll-snap-align: center;
+  transition: transform .26s cubic-bezier(.35,1.22,.62,1.08);
+}
+.offer-card:hover {
+  transform: translateY(-7px) scale(1.04);
+  box-shadow: 0 17px 44px 0 rgb(145 101 255 / 18%);
+}
+.offer-img {
+  width: 54px;
+  height: 54px;
+  object-fit: contain;
+  border-radius: 20%;
+  background: #f9f6ff;
+  box-shadow: 0 2px 8px 0 rgb(102 68 255 / 5%);
+}
+.offer-text h4 {
+  margin: 0 0 6px 0;
+  font-size: 1.15em;
+  color: #48356d;
+}
+.offer-text p {
+  font-size: 0.97em;
+  color: #806ad4;
+  margin-bottom: 10px;
+}
+.offer-text .gradient-btn {
+  font-size: 0.94em;
+  padding: 7px 18px;
+}
+
+@media(max-width: 700px) {
+  .offer-card { min-width: 90vw; }
+}
+
+/* -------- HOW IT WORKS -------- */
+.hiw-section { margin-top: 48px; }
+.hiw-section h2 { font-weight: 600; margin-bottom: 24px; }
+.hiw-timeline {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  gap: 0px;
+}
+.hiw-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  flex: 1;
+  position: relative;
+  min-width: 105px;
+}
+.hiw-icon {
+  color: #7e45ff;
+  background: #f3efff;
+  border-radius: 50%;
+  font-size: 2em;
+  padding: 15px 15px;
+  margin-bottom: 13px;
+  box-shadow: 0 4px 16px 0 rgb(143 129 243 / 10%);
+  z-index: 1;
+  transition: background .2s;
+}
+.hiw-label {
+  font-weight: 600;
+  font-size: 1em;
+  color: #624da8;
+  margin-bottom: 4px;
+}
+.hiw-desc {
+  font-size: 0.92em;
+  color: #b19ff1;
+  margin-bottom: 0;
+}
+.timeline-bar {
+  position: absolute;
+  right: -50px;
+  top: 32px;
+  width: 100px;
+  height: 4px;
+  background: linear-gradient(90deg, #b09fff 40%, #765de7 100%);
+  z-index: 0;
+}
+.hiw-step:last-child .timeline-bar { display: none; }
+
+@media(max-width: 830px) {
+  .hiw-timeline { flex-direction: column; gap: 23px; }
+  .hiw-step .timeline-bar { display: none; }
+}
+
+/* -------- WHY BOOK -------- */
+.why-section { margin-top: 44px; }
+.why-section h2 { font-weight: 600; margin-bottom: 21px; }
+.why-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(205px, 1fr));
+  gap: 24px;
+}
+.why-card {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 6px 22px 0 rgb(102 118 255 / 10%);
+  padding: 28px 18px 16px 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  transition: box-shadow .19s, transform .19s;
+}
+.why-card:hover {
+  box-shadow: 0 17px 38px 0 rgb(142 89 255 / 18%);
+  transform: translateY(-6px) scale(1.025);
+}
+.why-icon {
+  font-size: 2em;
+  color: #765de7;
+  background: #f6f1ff;
+  border-radius: 37%;
+  padding: 9px 14px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 7px 0 rgb(182 123 255 / 7%);
+}
+.why-title {
+  font-weight: 600;
+  font-size: 1.09em;
+  color: #513d85;
+}
+.why-desc {
+  color: #b19ff1;
+  font-size: 0.97em;
+}
+
+/* -------- TRUST INDICATORS -------- */
+.trust-section {
+  margin: 39px 0 9px 0;
+}
+.trust-indicators {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 35px;
+}
+.trust-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255,255,255,0.82);
+  border-radius: 9px;
+  padding: 7px 18px;
+  font-size: 1.04em;
+  color: #5d4da8;
+  font-weight: 500;
+  box-shadow: 0 1px 5px 0 rgb(179 148 255 / 7%);
+}
+.trust-icon {
+  font-size: 1.22em;
+  color: #765de7;
+}
+
+/* -------- SUPPORT -------- */
+.support-section {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-top: 26px;
+  position: relative;
+}
+.support-btn {
+  font-size: 1.09em;
+  padding: 12px 27px;
+  margin-bottom: 0;
+  z-index: 1;
+}
+.chatbot-fab {
+  position: fixed;
+  bottom: 45px;
+  right: 38px;
+  background: linear-gradient(135deg, #b09fff 20%, #5d8efc 100%);
+  color: #fff;
+  font-size: 1.7em;
+  border-radius: 50%;
+  width: 58px;
+  height: 58px;
+  box-shadow: 0 3px 24px 0 rgb(99 98 255 / 24%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 99;
+  transition: box-shadow 0.15s, transform 0.17s;
+}
+.chatbot-fab:hover { box-shadow: 0 9px 24px 0 rgb(145 101 255 / 21%); transform: scale(1.1);}
+@media(max-width: 650px) {
+  .chatbot-fab { right: 16px; bottom: 17px; }
+}
+
+/* -------- BUTTONS & EFFECTS -------- */
+.gradient-btn {
+  background: linear-gradient(120deg, #765de7 40%, #5d8efc 85%);
+  color: #fff;
+  border: none;
+  border-radius: 21px;
+  padding: 11px 21px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  box-shadow: 0 2.5px 8px 0 rgb(81 109 220 / 10%);
+  transition: background .14s, transform .16s, box-shadow .19s;
+  cursor: pointer;
+}
+.gradient-btn:hover {
+  background: linear-gradient(120deg, #5d8efc 35%, #765de7 90%);
+  box-shadow: 0 7px 18px 0 rgb(86 99 255 / 16%);
+  transform: translateY(-3px) scale(1.025);
+}
+
+input::-webkit-input-placeholder, select:invalid { color: #b8acf0; }
+input:-ms-input-placeholder { color: #b8acf0; }
+input::placeholder { color: #b8acf0; }
+
+@keyframes fadeIn {
+  0% { opacity: 0; transform: translateY(40px);}
+  100% { opacity: 1; transform: none;}
+}
+.fade-in { animation: fadeIn 1s cubic-bezier(.6,.11,.67,1.05); }
+
+@keyframes slideIn {
+  0% { opacity: 0; transform: translateX(-50px);}
+  100% { opacity: 1; transform: none;}
+}
+.slide-in { animation: slideIn 1.2s cubic-bezier(.48,.09,.83,.66); }
+
+@keyframes fadeUp {
+  0% { opacity: 0; transform: translateY(40px);}
+  100% { opacity: 1; transform: none;}
+}
+.fade-up { animation: fadeUp 1.2s cubic-bezier(.41,.12,.71,1.05); }
+
+@media(max-width: 950px) {
+  .flightbooking-container { max-width: 98vw; padding: 14px 2vw 34px 2vw;}
+  .search-section, .offers-section, .why-section { padding: 22px 6vw;}
+  .hiw-section { padding-left: 0; padding-right: 0; }
+  .offers-carousel { gap: 17px;}
+}
+
+@media(max-width: 570px) {
+  .search-section, .offers-section, .why-section { padding: 13px 1vw;}
+  .form-row { grid-template-columns: 1fr; }
+  .hiw-section h2, .offers-section h2, .why-section h2 { font-size: 1.22em;}
+  .flight-search-form { row-gap: 9px; }
+  .offers-carousel { gap: 11px;}
+}
+
+
+
+
+
+
+const flights = [
+  {
+    id: '1',
+    airline: 'Indigo',
+    airlineLogo: 'https://upload.wikimedia.org/wikipedia/commons/5/53/IndiGo_Logo.svg',
+    flightNumber: '6E 489',
+    departureTime: '06:30',
+    departureAirportCode: 'GOI',
+    arrivalTime: '08:45',
+    arrivalAirportCode: 'DEL',
+    duration: '2h 15m',
+    stops: 0,
+    stopsLocations: [],
+    refundable: true,
+    fareType: 'Refundable',
+    baseFare: 3500,
+    taxes: 500,
+    convenienceFee: 100,
+    totalFare: 4100,
+    cancellationPolicy: 'Full Refund upto 24 hrs before departure',
+    baggageAllowance: '15kg',
+    seatSelection: true,
+    realTimeSeatsLeft: 3,
+    saved: false,
+    carbonEmission: '80 kg CO₂',
+    flightTrackerLink: '#',
+  },
+  {
+    id: '2',
+    airline: 'Air India',
+    airlineLogo: 'https://upload.wikimedia.org/wikipedia/en/9/9b/Air_India_Logo.svg',
+    flightNumber: 'AI 201',
+    departureTime: '09:15',
+    departureAirportCode: 'GOI',
+    arrivalTime: '12:00',
+    arrivalAirportCode: 'DEL',
+    duration: '2h 45m',
+    stops: 1,
+    stopsLocations: ['BOM'],
+    refundable: false,
+    fareType: 'Non-refundable',
+    baseFare: 3300,
+    taxes: 550,
+    convenienceFee: 120,
+    totalFare: 3970,
+    cancellationPolicy: 'No refund',
+    baggageAllowance: '20kg',
+    seatSelection: false,
+    realTimeSeatsLeft: 5,
+    saved: true,
+    carbonEmission: '90 kg CO₂',
+    flightTrackerLink: '#',
+  },
+  {
+    id: '3',
+    airline: 'Vistara',
+    airlineLogo: 'https://upload.wikimedia.org/wikipedia/en/e/e0/Vistara_logo.svg',
+    flightNumber: 'UK 789',
+    departureTime: '14:00',
+    departureAirportCode: 'GOI',
+    arrivalTime: '16:10',
+    arrivalAirportCode: 'DEL',
+    duration: '2h 10m',
+    stops: 0,
+    stopsLocations: [],
+    refundable: true,
+    fareType: 'Refundable',
+    baseFare: 4200,
+    taxes: 600,
+    convenienceFee: 100,
+    totalFare: 4900,
+    cancellationPolicy: 'Cancel with 50% refund upto 6 hrs before',
+    baggageAllowance: '25kg',
+    seatSelection: true,
+    realTimeSeatsLeft: 2,
+    saved: false,
+    carbonEmission: '75 kg CO₂',
+    flightTrackerLink: '#',
+  },
+  {
+    id: '4',
+    airline: 'SpiceJet',
+    airlineLogo: 'https://upload.wikimedia.org/wikipedia/en/0/0a/SpiceJet_logo.svg',
+    flightNumber: 'SG 452',
+    departureTime: '18:30',
+    departureAirportCode: 'GOI',
+    arrivalTime: '21:00',
+    arrivalAirportCode: 'DEL',
+    duration: '2h 30m',
+    stops: 1,
+    stopsLocations: ['PNQ'],
+    refundable: false,
+    fareType: 'Non-refundable',
+    baseFare: 3200,
+    taxes: 500,
+    convenienceFee: 100,
+    totalFare: 3800,
+    cancellationPolicy: 'No refund',
+    baggageAllowance: '15kg',
+    seatSelection: false,
+    realTimeSeatsLeft: 6,
+    saved: false,
+    carbonEmission: '85 kg CO₂',
+    flightTrackerLink: '#',
+  },
+];
+
+export default flights;
+
+
+
+
+
+
+
+
+
+
+import React, { useState, useEffect, useMemo } from 'react';
+import './Login.css';
+import {
+  PencilIcon,
+  ArrowLeftIcon,
+  ArrowsRightLeftIcon,
+  ClockIcon,
+  CurrencyRupeeIcon,
+  CheckCircleIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
+  FunnelIcon,
+  XMarkIcon,
+  ChevronRightIcon,
+  ChevronLeftIcon,
+  UserIcon,
+} from '@heroicons/react/24/outline';
+
+// Dummy flight data for example
+const dummyFlights = [
+  {
+    id: 'f1',
+    airline: 'Indigo',
+    airlineLogo: 'https://upload.wikimedia.org/wikipedia/commons/5/53/IndiGo_Logo.svg',
+    flightNumber: '6E 1234',
+    departureTime: '06:30',
+    arrivalTime: '08:45',
+    departureTimestamp: 6.5,
+    arrivalTimestamp: 8.75,
+    duration: '2h 15m',
+    stops: 0,
+    stopsAt: [],
+    fareType: 'Refundable',
+    refundable: true,
+    price: 4200,
+    seatsLeft: 3,
+    luggage: '15kg',
+    carbonEmission: '75 kg CO₂',
+  },
+  {
+    id: 'f2',
+    airline: 'Air India',
+    airlineLogo: 'https://upload.wikimedia.org/wikipedia/en/9/9b/Air_India_Logo.svg',
+    flightNumber: 'AI 201',
+    departureTime: '09:15',
+    arrivalTime: '12:05',
+    departureTimestamp: 9.25,
+    arrivalTimestamp: 12.08,
+    duration: '2h 50m',
+    stops: 1,
+    stopsAt: ['BOM'],
+    fareType: 'Non-refundable',
+    refundable: false,
+    price: 4100,
+    seatsLeft: 5,
+    luggage: '20kg',
+    carbonEmission: '90 kg CO₂',
+  },
+  {
+    id: 'f3',
+    airline: 'Vistara',
+    airlineLogo: 'https://upload.wikimedia.org/wikipedia/en/e/e0/Vistara_logo.svg',
+    flightNumber: 'UK 789',
+    departureTime: '14:00',
+    arrivalTime: '16:10',
+    departureTimestamp: 14,
+    arrivalTimestamp: 16.17,
+    duration: '2h 10m',
+    stops: 0,
+    stopsAt: [],
+    fareType: 'Refundable',
+    refundable: true,
+    price: 5600,
+    seatsLeft: 1,
+    luggage: '25kg',
+    carbonEmission: '80 kg CO₂',
+  },
+  {
+    id: 'f4',
+    airline: 'SpiceJet',
+    airlineLogo: 'https://upload.wikimedia.org/wikipedia/en/0/0a/SpiceJet_logo.svg',
+    flightNumber: 'SG 452',
+    departureTime: '18:30',
+    arrivalTime: '21:00',
+    departureTimestamp: 18.5,
+    arrivalTimestamp: 21,
+    duration: '2h 30m',
+    stops: 1,
+    stopsAt: ['PNQ'],
+    fareType: 'Non-refundable',
+    refundable: false,
+    price: 3900,
+    seatsLeft: 7,
+    luggage: '15kg',
+    carbonEmission: '85 kg CO₂',
+  },
+];
+
+// Utility to format 24h decimal (e.g. 18.5) to h:mm AM/PM string
+function formatHour24(decimalHour) {
+  const h = Math.floor(decimalHour);
+  const m = Math.round((decimalHour - h) * 60);
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  const hour12 = h % 12 === 0 ? 12 : h % 12;
+  return `${hour12}:${m.toString().padStart(2, '0')} ${ampm}`;
+}
+
+export default function FlightResults() {
+  // Search summary state
+  const [searchSummary, setSearchSummary] = useState({
+    origin: { code: 'GOI', city: 'Goa' },
+    destination: { code: 'DEL', city: 'New Delhi' },
+    date: '2025-08-15',
+    passengers: { adults: 1, children: 0 },
+    travelClass: 'Economy',
+  });
+
+  // Show/hide search panel
+  const [searchPanelVisible, setSearchPanelVisible] = useState(false);
+
+  // Filters state
+  const [filters, setFilters] = useState({
+    airlines: new Set(),
+    priceRange: [0, 6000],
+    stops: new Set(),
+    departureRange: [0, 24],
+    arrivalRange: [0, 24],
+    refundableOnly: false,
+  });
+
+  // Sort state and direction: e.g. {field:'price', asc:true}
+  const [sort, setSort] = useState({ field: 'price', asc: true });
+
+  // Flights selected for comparison (max 3)
+  const [compareSet, setCompareSet] = useState(new Set());
+
+  // Flight list to display
+  const [shownFlights, setShownFlights] = useState(dummyFlights);
+
+  // Which flight's fare details accordion is open
+  const [fareDetailsOpenId, setFareDetailsOpenId] = useState(null);
+
+  // Compare modal visibility
+  const [compareModalOpen, setCompareModalOpen] = useState(false);
+
+  // Price range bounds (from flights)
+  const priceMin = Math.min(...dummyFlights.map(f => f.price));
+  const priceMax = Math.max(...dummyFlights.map(f => f.price));
+
+  // Helper - toggle filter in Set
+  const toggleFilterSet = (key, val) =>
+    setFilters((f) => {
+      const copy = new Set(f[key]);
+      if (copy.has(val)) copy.delete(val);
+      else copy.add(val);
+      return { ...f, [key]: copy };
+    });
+
+  // Update priceRange
+  const updatePriceRange = (idx, val) => {
+    setFilters((f) => {
+      const newRange = [...f.priceRange];
+      newRange[idx] = Number(val);
+      if (idx === 0 && newRange[0] > newRange[1]) newRange[1] = newRange[0];
+      if (idx === 1 && newRange[1] < newRange[0]) newRange[0] = newRange[1];
+      return { ...f, priceRange: newRange };
+    });
+  };
+
+  // Update departure/arrival time range
+  const updateTimeRange = (key, idx, val) => {
+    setFilters((f) => {
+      const newRange = [...f[key]];
+      newRange[idx] = Number(val);
+      if (idx === 0 && newRange[0] > newRange[1]) newRange[1] = newRange[0];
+      if (idx === 1 && newRange[1] < newRange[0]) newRange[0] = newRange[1];
+      return { ...f, [key]: newRange };
+    });
+  };
+
+  // Toggle refundableOnly boolean
+  const toggleRefundable = () => setFilters(f => ({ ...f, refundableOnly: !f.refundableOnly }));
+
+  // Clear all filters
+  const clearFilters = () => {
+    setFilters({
+      airlines: new Set(),
+      priceRange: [priceMin, priceMax],
+      stops: new Set(),
+      departureRange: [0, 24],
+      arrivalRange: [0, 24],
+      refundableOnly: false,
+    });
+  };
+
+  // Handle sorting toggle (clicking sort buttons toggles asc/desc)
+  const toggleSort = (field) => {
+    setSort((cur) => {
+      if (cur.field === field) {
+        return { field, asc: !cur.asc };
+      }
+      return { field, asc: true };
+    });
+  };
+
+  // Toggle comparing a flight
+  const toggleCompare = (flightId) => {
+    setCompareSet((cur) => {
+      const newSet = new Set(cur);
+      if (newSet.has(flightId)) {
+        newSet.delete(flightId);
+      } else {
+        if (newSet.size < 3) newSet.add(flightId);
+        else alert('You can compare up to 3 flights only.');
+      }
+      return newSet;
+    });
+  };
+
+  // Filter + sort flights memoization
+  const filteredFlights = useMemo(() => {
+    let fls = [...dummyFlights];
+
+    // Filter airlines
+    if (filters.airlines.size > 0) {
+      fls = fls.filter((f) => filters.airlines.has(f.airline));
+    }
+
+    // Filter stops
+    if (filters.stops.size > 0) {
+      fls = fls.filter((f) => filters.stops.has(f.stops));
+    }
+
+    // Filter refundable only
+    if (filters.refundableOnly) {
+      fls = fls.filter(f => f.refundable);
+    }
+
+    // Filter price range
+    fls = fls.filter(f => f.price >= filters.priceRange[0] && f.price <= filters.priceRange[1]);
+
+    // Filter departure time range
+    fls = fls.filter(f => f.departureTimestamp >= filters.departureRange[0] && f.departureTimestamp <= filters.departureRange[1]);
+
+    // Filter arrival time range (use arrivalTimestamp)
+    fls = fls.filter(f => f.arrivalTimestamp >= filters.arrivalRange[0] && f.arrivalTimestamp <= filters.arrivalRange[1]);
+
+    // Sort:
+    fls.sort((a, b) => {
+      let comp = 0;
+      switch (sort.field) {
+        case 'price':
+          comp = a.price - b.price;
+          break;
+        case 'duration': {
+          const parseDur = d => {
+            const match = /(\d+)h\s*(\d+)?m?/.exec(d);
+            if (!match) return 0;
+            return Number(match[1]) * 60 + (match[2] ? Number(match[2]) : 0);
+          };
+          comp = parseDur(a.duration) - parseDur(b.duration);
+          break;
+        }
+        case 'departure':
+          comp = a.departureTimestamp - b.departureTimestamp;
+          break;
+        case 'arrival':
+          comp = a.arrivalTimestamp - b.arrivalTimestamp;
+          break;
+        default:
+          comp = 0;
+      }
+      return sort.asc ? comp : -comp;
+    });
+
+    return fls;
+  }, [filters, sort]);
+
+  // On flights filtered change, update shownFlights
+  useEffect(() => {
+    setShownFlights(filteredFlights);
+  }, [filteredFlights]);
+
+  // Toggle fare details accordion for a flightId
+  const toggleFareDetails = (flightId) => {
+    setFareDetailsOpenId((cur) => (cur === flightId ? null : flightId));
+  };
+
+  // "Modify Search" toggles search panel
+  const toggleSearchPanel = () => setSearchPanelVisible((v) => !v);
+
+  // Back button handler (for demo, alert)
+  const goBackHome = () => alert('Back to homepage clicked!');
+
+  // Compare modal close handler
+  const closeCompareModal = () => setCompareModalOpen(false);
+
+  // Open compare modal only if 2 or more flights selected
+  useEffect(() => {
+    if (compareSet.size >= 2) setCompareModalOpen(true);
+    else setCompareModalOpen(false);
+  }, [compareSet]);
+
+  // Format date nicely for header
+  const formattedDate = useMemo(() => {
+    const dt = new Date(searchSummary.date);
+    return dt.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
+  }, [searchSummary.date]);
+
+  // Airlines list for filter dynamically from flights
+  const allAirlines = useMemo(() => {
+    const setAirlines = new Set(dummyFlights.map(f => f.airline));
+    return Array.from(setAirlines).sort();
+  }, []);
+
+  return (
+    <div className="flight-results">
+      {/* 1. Flight Summary Header */}
+      <header className="summary-header">
+        <button
+          className="back-home-btn"
+          aria-label="Back to homepage"
+          onClick={goBackHome}
+          type="button"
+        >
+          <ArrowLeftIcon className="icon-back" /> Home
+        </button>
+
+        <div className="route-summary" aria-live="polite">
+          <h1>
+            {searchSummary.origin.city} ({searchSummary.origin.code}){' '}
+            <ArrowsRightLeftIcon className="icon-arrow" aria-hidden="true" />{' '}
+            {searchSummary.destination.city} ({searchSummary.destination.code})
+          </h1>
+          <p className="date-passengers">
+            {formattedDate} | {searchSummary.passengers.adults} Adult{searchSummary.passengers.adults > 1 ? 's' : ''}
+            {searchSummary.passengers.children > 0 ? `, ${searchSummary.passengers.children} Child${searchSummary.passengers.children > 1 ? 'ren' : ''}` : ''} | {searchSummary.travelClass}
+          </p>
+        </div>
+
+        <button
+          className="modify-search-btn"
+          type="button"
+          aria-expanded={searchPanelVisible}
+          aria-controls="search-panel"
+          onClick={toggleSearchPanel}
+        >
+          <PencilIcon className="icon-pencil" /> Modify Search
+        </button>
+      </header>
+
+      {/* Optional: Search panel (toggle) -- can be your FlightBooking component or a placeholder */}
+      {searchPanelVisible && (
+        <section id="search-panel" className="search-panel" aria-label="Modify search panel">
+          {/* For demo, a placeholder */}
+          <p>Search panel open. Here you can integrate or embed the FlightBooking form.</p>
+          <button type="button" onClick={toggleSearchPanel} className="close-search-panel-btn">
+            Close
+          </button>
+        </section>
+      )}
+
+      {/* 4. Smart Sort Options Top Bar */}
+      <div className="sort-bar" role="region" aria-label="Sort flight results">
+        {['price', 'duration', 'departure', 'arrival'].map(field => (
+          <button
+            key={field}
+            type="button"
+            className={`sort-btn ${sort.field === field ? 'active' : ''}`}
+            onClick={() => toggleSort(field)}
+            aria-pressed={sort.field === field}
+          >
+            {field.charAt(0).toUpperCase() + field.slice(1)}
+            {sort.field === field && (
+              sort.asc ? <ChevronUpIcon className="icon-sort" /> : <ChevronDownIcon className="icon-sort" />
+            )}
+          </button>
+        ))}
+      </div>
+
+      <div className="content-area">
+        {/* 2. Filters Sidebar */}
+        <aside className="filters-sidebar" aria-label="Flight filters">
+
+          <section className="filter-group">
+            <h2>Airlines</h2>
+            {allAirlines.map(airline => (
+              <label key={airline} className="checkbox-label">
+                <input
+                  type="checkbox"
+                  checked={filters.airlines.has(airline)}
+                  onChange={() => toggleFilterSet('airlines', airline)}
+                  aria-checked={filters.airlines.has(airline)}
+                />
+                <span>{airline}</span>
+              </label>
+            ))}
+          </section>
+
+          <section className="filter-group">
+            <h2>Price Range (₹)</h2>
+            <div className="range-inputs">
+              <input
+                type="number"
+                min={priceMin}
+                max={filters.priceRange[1]}
+                value={filters.priceRange[0]}
+                onChange={e => updatePriceRange(0, e.target.value)}
+                aria-label="Minimum price"
+              />
+              <span>to</span>
+              <input
+                type="number"
+                min={filters.priceRange[0]}
+                max={priceMax}
+                value={filters.priceRange[1]}
+                onChange={e => updatePriceRange(1, e.target.value)}
+                aria-label="Maximum price"
+              />
+            </div>
+          </section>
+
+          <section className="filter-group">
+            <h2>Flight Stops</h2>
+            {[0, 1].map((stopCount) => (
+              <label key={stopCount} className="checkbox-label">
+                <input
+                  type="checkbox"
+                  checked={filters.stops.has(stopCount)}
+                  onChange={() => toggleFilterSet('stops', stopCount)}
+                  aria-checked={filters.stops.has(stopCount)}
+                />
+                {stopCount === 0 ? 'Non-stop' : `${stopCount} Stop`}
+              </label>
+            ))}
+          </section>
+
+          <section className="filter-group">
+            <h2>Departure Time</h2>
+            <div className="range-inputs time-range">
+              <input
+                type="number"
+                min={0}
+                max={filters.departureRange[1]}
+                value={filters.departureRange[0]}
+                onChange={e => updateTimeRange('departureRange', 0, e.target.value)}
+                aria-label="Earliest departure hour"
+                step="0.25"
+              />
+              <span>to</span>
+              <input
+                type="number"
+                min={filters.departureRange[0]}
+                max={24}
+                value={filters.departureRange[1]}
+                onChange={e => updateTimeRange('departureRange', 1, e.target.value)}
+                aria-label="Latest departure hour"
+                step="0.25"
+              />
+            </div>
+            <div className="time-labels">
+              <time>{formatHour24(filters.departureRange[0])}</time>
+              <time>{formatHour24(filters.departureRange[1])}</time>
+            </div>
+          </section>
+
+          <section className="filter-group">
+            <h2>Arrival Time</h2>
+            <div className="range-inputs time-range">
+              <input
+                type="number"
+                min={0}
+                max={filters.arrivalRange[1]}
+                value={filters.arrivalRange[0]}
+                onChange={e => updateTimeRange('arrivalRange', 0, e.target.value)}
+                aria-label="Earliest arrival hour"
+                step="0.25"
+              />
+              <span>to</span>
+              <input
+                type="number"
+                min={filters.arrivalRange[0]}
+                max={24}
+                value={filters.arrivalRange[1]}
+                onChange={e => updateTimeRange('arrivalRange', 1, e.target.value)}
+                aria-label="Latest arrival hour"
+                step="0.25"
+              />
+            </div>
+            <div className="time-labels">
+              <time>{formatHour24(filters.arrivalRange[0])}</time>
+              <time>{formatHour24(filters.arrivalRange[1])}</time>
+            </div>
+          </section>
+
+          <section className="filter-group refundable-toggle">
+            <label className="checkbox-label">
+              <input
+                type="checkbox"
+                checked={filters.refundableOnly}
+                onChange={toggleRefundable}
+                aria-checked={filters.refundableOnly}
+              />
+              Refundable only
+            </label>
+          </section>
+
+          <button type="button" className="clear-filters-btn" onClick={clearFilters}>
+            Clear All Filters
+          </button>
+        </aside>
+
+        {/* 3. Flight Results List */}
+        <main className="flights-list" aria-live="polite" aria-label="Flight results list">
+          {shownFlights.length === 0 && (
+            <div className="no-results">
+              <img
+                src="https://undraw.co/api/illustrations/undraw_no_data_re_kwbl.svg"
+                alt=""
+                aria-hidden="true"
+                className="no-results-illustration"
+              />
+              <p>No flights match your search criteria.</p>
+              <button
+                type="button"
+                className="btn-primary"
+                onClick={() => setSearchPanelVisible(true)}
+                aria-label="Try a different search"
+              >
+                Try a different search
+              </button>
+            </div>
+          )}
+
+          {shownFlights.map((flight) => {
+            const isComparing = compareSet.has(flight.id);
+            return (
+              <article
+                key={flight.id}
+                className="flight-card"
+                tabIndex={0}
+                aria-label={`Flight ${flight.airline} ${flight.flightNumber}, departs at ${flight.departureTime}, arrives at ${flight.arrivalTime}, duration ${flight.duration}, ${flight.fareType}, price ₹${flight.price}`}
+              >
+                <header className="flight-card-header">
+                  <div className="airline-info">
+                    <img
+                      src={flight.airlineLogo}
+                      alt={`${flight.airline} logo`}
+                      loading="lazy"
+                      className="airline-logo"
+                    />
+                    <div>
+                      <h3>{flight.airline}</h3>
+                      <p className="flight-number">{flight.flightNumber}</p>
+                    </div>
+                  </div>
+                  <label className="compare-checkbox-label">
+                    <input
+                      type="checkbox"
+                      checked={isComparing}
+                      onChange={() => toggleCompare(flight.id)}
+                      aria-checked={isComparing}
+                      aria-label={`Compare flight ${flight.airline} ${flight.flightNumber}`}
+                    />
+                    Compare
+                  </label>
+                </header>
+
+                <div className="times-duration">
+                  <div className="times">
+                    <time className="departure-time">{flight.departureTime}</time>
+                    <span aria-hidden="true" className="arrow-icon">→</span>
+                    <time className="arrival-time">{flight.arrivalTime}</time>
+                  </div>
+                  <div className="duration-stops">
+                    <ClockIcon className="icon-time" aria-hidden="true" />
+                    <span>{flight.duration}</span>
+                    <span className="separator">|</span>
+                    <span>
+                      {flight.stops === 0
+                        ? 'Non-stop'
+                        : `${flight.stops} stop${flight.stops > 1 ? 's' : ''}`}
+                      {flight.stopsAt.length > 0 ? ` at ${flight.stopsAt.join(', ')}` : ''}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="fare-info">
+                  <span
+                    className={`fare-type ${flight.refundable ? 'refundable' : 'non-refundable'}`}
+                    aria-label={flight.refundable ? 'Refundable fare' : 'Non-refundable fare'}
+                  >
+                    {flight.fareType}
+                    {flight.refundable && (
+                      <CheckCircleIcon className="icon-check" aria-hidden="true" />
+                    )}
+                  </span>
+                  <div className="price-and-seats">
+                    <CurrencyRupeeIcon className="icon-rupee" aria-hidden="true" />
+                    <span className="price">{flight.price}</span>
+                    <span className="seats-left" aria-live="polite">
+                      {flight.seatsLeft} seat{flight.seatsLeft !== 1 ? 's' : ''} left
+                    </span>
+                  </div>
+                </div>
+
+                {/* Fare Details accordion */}
+                <button
+                  className="fare-details-toggle"
+                  onClick={() => toggleFareDetails(flight.id)}
+                  aria-expanded={fareDetailsOpenId === flight.id}
+                  aria-controls={`fare-details-${flight.id}`}
+                  type="button"
+                >
+                  {fareDetailsOpenId === flight.id ? 'Hide Fare Details' : 'View Fare Details'}
+                  {fareDetailsOpenId === flight.id ? (
+                    <ChevronUpIcon className="icon-chevron" aria-hidden="true" />
+                  ) : (
+                    <ChevronDownIcon className="icon-chevron" aria-hidden="true" />
+                  )}
+                </button>
+
+                {fareDetailsOpenId === flight.id && (
+                  <section
+                    className="fare-details"
+                    id={`fare-details-${flight.id}`}
+                    aria-live="polite"
+                  >
+                    <div className="fare-row">
+                      <span>Base Fare:</span>
+                      <span>₹{Math.round(flight.price * 0.7)}</span>
+                    </div>
+                    <div className="fare-row">
+                      <span>Taxes & Fees:</span>
+                      <span>₹{Math.round(flight.price * 0.2)}</span>
+                    </div>
+                    <div className="fare-row">
+                      <span>Luggage Allowance:</span>
+                      <span>{flight.luggage}</span>
+                    </div>
+                    <div className="fare-row total">
+                      <span>Total:</span>
+                      <span>₹{flight.price}</span>
+                    </div>
+                    <div className="carbon-emission">
+                      Estimated Carbon Emission: {flight.carbonEmission}
+                    </div>
+                  </section>
+                )}
+
+                <button
+                  className="btn-book-now"
+                  type="button"
+                  onClick={() => alert(`Proceeding to booking for flight ${flight.flightNumber}`)}
+                >
+                  Book Now
+                </button>
+              </article>
+            );
+          })}
+        </main>
+      </div>
+
+      {/* 5. Compare Flights Modal */}
+      {compareModalOpen && (
+        <div className="compare-modal-overlay" role="dialog" aria-modal="true" aria-label="Compare selected flights">
+          <div className="compare-modal-content">
+            <header className="compare-modal-header">
+              <h2>Compare Flights</h2>
+              <button
+                onClick={closeCompareModal}
+                aria-label="Close compare flights modal"
+                className="btn-close"
+                type="button"
+              >
+                <XMarkIcon className="icon-close" />
+              </button>
+            </header>
+            <div className="compare-flights-container">
+              {[...compareSet].map((id) => {
+                const flight = dummyFlights.find(f => f.id === id);
+                if (!flight) return null;
+                return (
+                  <div key={flight.id} className="compare-flight-card">
+                    <div className="compare-airline">
+                      <img src={flight.airlineLogo} alt={`${flight.airline} logo`} loading="lazy" />
+                      <h3>{flight.airline}</h3>
+                      <p>{flight.flightNumber}</p>
+                    </div>
+                    <div className="compare-times">
+                      <div>
+                        <strong>Departure:</strong> {flight.departureTime}
+                      </div>
+                      <div>
+                        <strong>Arrival:</strong> {flight.arrivalTime}
+                      </div>
+                      <div>
+                        <strong>Duration:</strong> {flight.duration}
+                      </div>
+                    </div>
+                    <div className="compare-fare">
+                      <strong>Fare Type:</strong> {flight.fareType}
+                    </div>
+                    <div className="compare-luggage">
+                      <strong>Luggage:</strong> {flight.luggage}
+                    </div>
+                    <div className="compare-refund">
+                      <strong>Refund Policy:</strong> {flight.refundable ? 'Refundable' : 'Non-refundable'}
+                    </div>
+                    <div className="compare-price">
+                      <CurrencyRupeeIcon className="icon-rupee" aria-hidden="true" /> {flight.price}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 6. Sticky CTA Footer (Mobile) */}
+      <footer className="sticky-footer" aria-label="Sticky footer on mobile">
+        <span>{shownFlights.length} flights found</span>
+        <button
+          className="btn-sort-filter"
+          type="button"
+          aria-label="Toggle sort and filter options"
+          onClick={() => {
+            // For simplicity, just toggle filter sidebar visibility on mobile
+            const el = document.querySelector('.filters-sidebar');
+            if (el) el.classList.toggle('visible-mobile');
+          }}
+        >
+          <FunnelIcon className="icon-filter" /> Sort / Filter
+        </button>
+        <button
+          className="btn-continue"
+          type="button"
+          onClick={() => alert('Continue clicked')}
+        >
+          Continue
+        </button>
+      </footer>
+    </div>
+  );
+}
+
+
+
+
+
+
+
+
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+:root {
+  --color-bg: #fff;
+  --color-border: #d0e8ff;
+  --color-gradient-start: #a3bffa; /* pastel blue */
+  --color-gradient-end: #b4f7ef; /* pastel mint */
+  --color-text-primary: #1f2937;
+  --color-text-muted: #6b7280;
+  --color-pastel-accent: #def6f1;
+  --color-shadow: rgba(0, 0, 0, 0.05);
+
+  --border-radius: 10px;
+  --transition-speed: 0.3s;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body, html {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.flight-results {
+  max-width: 1080px;
+  margin: 1.5rem auto 3rem;
+  padding: 0 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* 1. Summary Header */
+.summary-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background: linear-gradient(90deg, var(--color-gradient-start), var(--color-gradient-end));
+  border-radius: var(--border-radius);
+  padding: 1rem 1.25rem;
+  color: #fff;
+  font-weight: 600;
+  flex-wrap: wrap;
+}
+.route-summary {
+  flex: 1 1 auto;
+  min-width: 280px;
+}
+.route-summary h1 {
+  margin: 0 0 0.25rem;
+  font-weight: 700;
+  font-size: 1.4rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.icon-arrow {
+  width: 20px;
+  height: 20px;
+  stroke-width: 2;
+}
+.date-passengers {
+  margin: 0;
+  font-weight: 400;
+  font-size: 0.95rem;
+}
+
+.back-home-btn {
+  color: #fff;
+  background: transparent;
+  border: none;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  transition: opacity 0.3s;
+  flex-shrink: 0;
+  font-size: 1rem;
+}
+.back-home-btn:hover,
+.back-home-btn:focus {
+  opacity: 0.8;
+  outline: none;
+}
+.icon-back {
+  width: 20px;
+  height: 20px;
+}
+.modify-search-btn {
+  background: rgba(255 255 255 / 0.3);
+  border: none;
+  border-radius: 9999px;
+  padding: 0.5rem 1rem;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background-color var(--transition-speed);
+  flex-shrink: 0;
+}
+.modify-search-btn:hover,
+.modify-search-btn:focus {
+  background: rgba(255 255 255 / 0.5);
+  outline: none;
+}
+.icon-pencil {
+  width: 18px;
+  height: 18px;
+}
+
+/* Search Panel (placeholder) */
+.search-panel {
+  background: var(--color-pastel-accent);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--color-border);
+  padding: 1rem;
+  margin-bottom: 1rem;
+  color: var(--color-text-primary);
+  box-shadow: 0 4px 15px var(--color-shadow);
+  position: relative;
+}
+.close-search-panel-btn {
+  position: absolute;
+  top: 0.5rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+.close-search-panel-btn:hover,
+.close-search-panel-btn:focus {
+  color: var(--color-text-primary);
+  outline: none;
+}
+
+/* 4. Sort Bar */
+.sort-bar {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding: 0.5rem 0;
+}
+.sort-btn {
+  background: var(--color-pastel-accent);
+  border: none;
+  padding: 0.4rem 1rem;
+  border-radius: var(--border-radius);
+  color: var(--color-text-primary);
+  font-weight: 600;
+  cursor: pointer;
+  outline-offset: 2px;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  transition: background-color var(--transition-speed);
+}
+.sort-btn:hover,
+.sort-btn:focus {
+  background: var(--color-gradient-start);
+  color: #fff;
+  outline: none;
+}
+.sort-btn.active {
+  background: var(--color-gradient-end);
+  color: #1f2937;
+}
+.icon-sort {
+  width: 18px;
+  height: 18px;
+  stroke-width: 2;
+}
+
+/* 2 & 3 Content - Filters + Flight List */
+.content-area {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 2rem;
+}
+
+/* Filters Sidebar */
+.filters-sidebar {
+  position: sticky;
+  top: 80px;
+  max-height: calc(100vh - 90px);
+  overflow-y: auto;
+  background: var(--color-pastel-accent);
+  border-radius: var(--border-radius);
+  padding: 1rem;
+  box-shadow: 0 0 8px var(--color-shadow);
+  border: 1px solid var(--color-border);
+}
+.filter-group {
+  margin-bottom: 1.5rem;
+}
+.filter-group h2 {
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: var(--color-text-primary);
+}
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.4rem;
+  font-weight: 500;
+  cursor: pointer;
+  color: var(--color-text-primary);
+  user-select: none;
+}
+.checkbox-label input[type='checkbox'] {
+  cursor: pointer;
+  width: 16px;
+  height: 16px;
+}
+.range-inputs {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.range-inputs input[type='number'] {
+  width: 70px;
+  padding: 0.3rem 0.5rem;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--color-border);
+  font-weight: 500;
+  font-size: 0.9rem;
+  outline-offset: 2px;
+  transition: border-color var(--transition-speed);
+}
+.range-inputs input[type='number']:focus {
+  outline: none;
+  border-color: var(--color-gradient-start);
+  box-shadow: 0 0 6px var(--color-gradient-start);
+}
+.time-range {
+  max-width: 190px;
+}
+.time-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+.refundable-toggle {
+  font-weight: 600;
+  color: var(--color-gradient-start);
+  user-select: none;
+}
+.clear-filters-btn {
+  background: #f87171;
+  color: #fff;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  border-radius: var(--border-radius);
+  width: 100%;
+  transition: background-color 0.3s;
+}
+.clear-filters-btn:hover,
+.clear-filters-btn:focus {
+  background: #dc2626;
+  outline: none;
+}
+
+/* Flights List */
+.flights-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 1.5rem;
+}
+.no-results {
+  text-align: center;
+  font-style: italic;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+.no-results-illustration {
+  width: 150px;
+  margin-bottom: 1rem;
+  user-select: none;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+  pointer-events: none;
+}
+
+.flight-card {
+  background: var(--color-bg);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 4px 6px var(--color-shadow);
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  transition: box-shadow var(--transition-speed), transform var(--transition-speed);
+  cursor: default;
+  outline-offset: 3px;
+  animation: fadeInUp 0.4s ease forwards;
+}
+
+.flight-card:hover,
+.flight-card:focus-visible {
+  box-shadow: 0 8px 16px var(--color-shadow);
+  transform: translateY(-4px);
+  outline: none;
+}
+.flight-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  gap: 1rem;
+}
+.airline-info {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+.airline-logo {
+  height: 36px;
+  width: auto;
+  object-fit: contain;
+  user-select: none;
+}
+.flight-number {
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+  margin: 0;
+  font-weight: 500;
+}
+.compare-checkbox-label {
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.compare-checkbox-label input {
+  cursor: pointer;
+  width: 16px;
+  height: 16px;
+}
+
+.times-duration {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+.times {
+  font-weight: 700;
+  font-size: 1.3rem;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  color: var(--color-text-primary);
+}
+.arrow-icon {
+  transform: translateY(1px);
+  font-weight: 700;
+  user-select: none;
+}
+.duration-stops {
+  font-weight: 500;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.icon-time {
+  width: 14px;
+  height: 14px;
+  stroke-width: 2;
+  color: var(--color-gradient-start);
+  vertical-align: middle;
+}
+.separator {
+  user-select: none;
+  color: var(--color-text-muted);
+}
+
+.fare-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem 1rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--color-text-primary);
+}
+.fare-type {
+  padding: 3px 8px;
+  border-radius: 9999px;
+  font-weight: 700;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  cursor: default;
+}
+.fare-type.refundable {
+  color: #22c55e; /* green */
+  background: #dcfce7;
+}
+.fare-type.non-refundable {
+  color: #ef4444;
+  background: #fee2e2;
+}
+.icon-check {
+  width: 16px;
+  height: 16px;
+  stroke-width: 3;
+  color: #22c55e;
+}
+.price-and-seats {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.icon-rupee {
+  width: 18px;
+  height: 18px;
+  stroke-width: 2;
+  color: var(--color-gradient-end);
+}
+
+.price {
+  font-weight: 700;
+  font-size: 1.25rem;
+}
+.seats-left {
+  font-size: 0.85rem;
+  font-style: italic;
+  font-weight: 600;
+  color: #ef4444;
+}
+
+/* Fare Details toggle */
+.fare-details-toggle {
+  border: none;
+  background: none;
+  color: var(--color-gradient-start);
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  transition: color var(--transition-speed);
+  margin-top: 0.5rem;
+  padding: 0;
+}
+.fare-details-toggle:hover,
+.fare-details-toggle:focus {
+  color: var(--color-gradient-end);
+  outline: none;
+}
+.icon-chevron {
+  width: 16px;
+  height: 16px;
+  stroke-width: 3;
+}
+
+/* Fare Details content */
+.fare-details {
+  margin-top: 0.6rem;
+  border-top: 1px solid var(--color-border);
+  padding-top: 0.6rem;
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+}
+.fare-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.3rem;
+}
+.fare-row.total {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--color-text-primary);
+}
+.carbon-emission {
+  margin-top: 0.3rem;
+  font-style: italic;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+/* Book Now button */
+.btn-book-now {
+  margin-top: 0.8rem;
+  align-self: stretch;
+  background: linear-gradient(90deg, var(--color-gradient-start), var(--color-gradient-end));
+  border: none;
+  color: white;
+  font-weight: 600;
+  padding: 0.6rem 0;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: background-color var(--transition-speed);
+  font-size: 1rem;
+}
+.btn-book-now:hover,
+.btn-book-now:focus {
+  background: linear-gradient(90deg, var(--color-gradient-end), var(--color-gradient-start));
+  outline: none;
+}
+
+/* FadeIn animation */
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 5. Compare Flights Modal */
+.compare-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(31, 41, 55, 0.65);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 300;
+}
+.compare-modal-content {
+  background: var(--color-bg);
+  border-radius: var(--border-radius);
+  padding: 1rem 1.5rem;
+  max-width: 900px;
+  width: 90vw;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 22px var(--color-shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.compare-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.compare-modal-header h2 {
+  margin: 0;
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: var(--color-text-primary);
+}
+.btn-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color var(--transition-speed);
+}
+.btn-close:hover,
+.btn-close:focus {
+  color: var(--color-gradient-start);
+  outline: none;
+}
+.icon-close {
+  width: 24px;
+  height: 24px;
+}
+.compare-flights-container {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  padding-bottom: 1rem;
+}
+.compare-flight-card {
+  background: var(--color-pastel-accent);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--color-border);
+  flex: 0 0 250px;
+  padding: 1rem;
+  box-shadow: 0 4px 12px var(--color-shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  font-size: 0.9rem;
+}
+.compare-flight-card img {
+  height: 36px;
+  width: auto;
+  object-fit: contain;
+  margin-bottom: 0.4rem;
+}
+.compare-flight-card h3 {
+  margin: 0 0 0.3rem 0;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+.compare-flight-card p {
+  margin: 0 0 0.8rem 0;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+.compare-flight-card > div {
+  display: flex;
+  justify-content: space-between;
+}
+
+/* 6. Sticky CTA Footer (mobile) */
+.sticky-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(90deg, var(--color-gradient-start), var(--color-gradient-end));
+  color: white;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 0.75rem 0.5rem;
+  font-weight: 600;
+  gap: 0.5rem;
+  box-shadow: 0 -3px 12px rgba(37, 99, 235, 0.4);
+  border-top-left-radius: var(--border-radius);
+  border-top-right-radius: var(--border-radius);
+  z-index: 500;
+}
+.sticky-footer span {
+  flex: 1 1 auto;
+  font-size: 0.95rem;
+}
+.btn-sort-filter,
+.btn-continue {
+  background: white;
+  color: var(--color-gradient-start);
+  border: none;
+  padding: 0.5rem 1.25rem;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 1rem;
+  transition: background-color var(--transition-speed), color var(--transition-speed);
+}
+.btn-sort-filter:hover,
+.btn-sort-filter:focus,
+.btn-continue:hover,
+.btn-continue:focus {
+  background: #def6f1;
+  outline: none;
+}
+.btn-sort-filter {
+  display: flex;
+  gap: 0.3rem;
+  align-items: center;
+}
+.icon-filter {
+  width: 18px;
+  height: 18px;
+  stroke-width: 2;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .content-area {
+    grid-template-columns: 1fr;
+  }
+  .filters-sidebar {
+    position: fixed;
+    bottom: 56px; /* to not overlap sticky footer */
+    right: 0;
+    left: -280px;
+    top: 80px;
+    max-height: calc(100vh - 136px);
+    box-shadow: 0 0 8px var(--color-shadow);
+    transition: left 0.3s ease;
+    z-index: 400;
+    background: var(--color-pastel-accent);
+    border-radius: var(--border-radius) 0 0 var(--border-radius);
+  }
+  .filters-sidebar.visible-mobile {
+    left: 0;
+  }
+}
+
+
+
+
+
+
+
+
+import React, { useState } from "react";
+import "./Login.css";
+
+// Icons SVG inline for simplicity (you can replace with icon libs)
+const IconConfirmed = () => (
+  <svg width="20" height="20" fill="#38A169" viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+  </svg>
+);
+
+const IconUser = () => (
+  <svg width="20" height="20" fill="#4A5568" viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v3h20v-3c0-3.3-6.7-5-10-5z" />
+  </svg>
+);
+
+const IconPhone = () => (
+  <svg width="20" height="20" fill="#4A5568" viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M6.62 10.79a15.538 15.538 0 006.59 6.59l2.2-2.2a1 1 0 011.11-.21c1.21.49 2.53.77 3.88.77a1 1 0 011 1v3.5a1 1 0 01-1 1C9.16 21.5 2.5 14.84 2.5 6a1 1 0 011-1h3.5a1 1 0 011 1c0 1.35.28 2.67.77 3.88a1 1 0 01-.21 1.11l-2.2 2.2z" />
+  </svg>
+);
+
+const IconEmail = () => (
+  <svg width="20" height="20" fill="#4A5568" viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M20 4H4c-1.1 0-2 .9-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
+  </svg>
+);
+
+const IconChevronDown = ({ className = "" }) => (
+  <svg
+    className={className}
+    width="20"
+    height="20"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    viewBox="0 0 24 24"
+    aria-hidden="true"
+    focusable="false"
+  >
+    <polyline points="6 9 12 15 18 9" />
+  </svg>
+);
+
+const IconSeats = () => (
+  <svg width="20" height="20" fill="#4A5568" viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M8 17H6v-4H2v5a2 2 0 002 2h12v-3H8zm10-1v3h2v-5h-4v4zM14 11V5a2 2 0 00-2-2H6a2 2 0 00-2 2v6h10z" />
+  </svg>
+);
+
+const FlightItineraryPage = () => {
+  // Dummy data
+  const [selectedSeats, setSelectedSeats] = useState([]);
+  const booking = {
+    confirmed: true,
+    bookingID: "PNR12345",
+    passengers: [
+      { name: "John Doe", seat: "12A" },
+      { name: "Jane Smith", seat: "12B" },
+    ],
+    contact: {
+      email: "john.doe@example.com",
+      phone: "+91 9876543210",
+    },
+  };
+
+  const flight = {
+    airlineLogo:
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dc/Air_India_Logo.svg/120px-Air_India_Logo.svg.png",
+    airlineName: "Air India",
+    flightNumber: "AI-101",
+    departure: {
+      code: "BOM",
+      airport: "Chhatrapati Shivaji Maharaj International Airport",
+      terminal: "T2",
+      gate: "D15",
+      time: "07:30 AM",
+      date: "August 15, 2025",
+    },
+    arrival: {
+      code: "DEL",
+      airport: "Indira Gandhi International Airport",
+      terminal: "T3",
+      gate: "A12",
+      time: "09:45 AM",
+      date: "August 15, 2025",
+    },
+    duration: "2h 15m",
+    layover: null, // or e.g. "1h 30m at Hyderabad (HYD)"
+  };
+
+  const seatLayout = [
+    // row, seats: label and booked status
+    {
+      row: 10,
+      seats: [
+        { label: "A", booked: false },
+        { label: "B", booked: true },
+        { label: "C", booked: false },
+        null, // aisle
+        { label: "D", booked: false },
+        { label: "E", booked: false },
+        { label: "F", booked: true },
+      ],
+    },
+    {
+      row: 11,
+      seats: [
+        { label: "A", booked: false },
+        { label: "B", booked: false },
+        { label: "C", booked: false },
+        null,
+        { label: "D", booked: true },
+        { label: "E", booked: false },
+        { label: "F", booked: false },
+      ],
+    },
+    {
+      row: 12,
+      seats: [
+        { label: "A", booked: true },
+        { label: "B", booked: false },
+        { label: "C", booked: false },
+        null,
+        { label: "D", booked: false },
+        { label: "E", booked: false },
+        { label: "F", booked: false },
+      ],
+    },
+  ];
+
+  const fare = {
+    baseFare: 5000,
+    convenienceFee: 150,
+    taxes: 500,
+    discounts: 300,
+  };
+
+  // Coupons state and data
+  const coupons = [
+    {
+      code: "SUMMER25",
+      description: "25% off on your booking",
+      applied: false,
+      terms: "Applicable once per user. Valid till 31st August.",
+      expanded: false,
+      bgColor: "yellow",
+    },
+    {
+      code: "FIRSTFLY",
+      description: "Flat ₹500 off for first booking",
+      applied: false,
+      terms: "Valid for new users only. Expires 30 Sep 2025.",
+      expanded: false,
+      bgColor: "blue",
+    },
+  ];
+
+  const [couponList, setCouponList] = useState(coupons);
+  const [appliedCoupons, setAppliedCoupons] = useState([]);
+
+  // Handler seat selection toggle
+  const toggleSeat = (row, seatLabel, booked) => {
+    if (booked) return;
+    const seatID = `${row}${seatLabel}`;
+    if (selectedSeats.includes(seatID)) {
+      setSelectedSeats(selectedSeats.filter((s) => s !== seatID));
+    } else {
+      setSelectedSeats([...selectedSeats, seatID]);
+    }
+  };
+
+  const totalFare =
+    fare.baseFare + fare.convenienceFee + fare.taxes - fare.discounts + selectedSeats.length * 500;
+
+  // Coupon apply/remove
+  const toggleCouponExpand = (code) => {
+    setCouponList((prev) =>
+      prev.map((c) =>
+        c.code === code ? { ...c, expanded: !c.expanded } : c
+      )
+    );
+  };
+
+  const applyCoupon = (code) => {
+    // For demo, toggle applied coupon
+    if (appliedCoupons.includes(code)) {
+      setAppliedCoupons(appliedCoupons.filter((c) => c !== code));
+    } else {
+      setAppliedCoupons([...appliedCoupons, code]);
+    }
+    setCouponList((prev) =>
+      prev.map((c) =>
+        c.code === code ? { ...c, applied: !c.applied, expanded: false } : c
+      )
+    );
+  };
+
+  return (
+    <div className="flight-itinerary-page">
+      {/* Left main container */}
+      <main className="main-content">
+        {/* Booking & Passenger Summary */}
+        <section className="card booking-summary" aria-labelledby="booking-summary-title">
+          <header className="booking-header">
+            {booking.confirmed && (
+              <div className="confirmed-status" aria-live="polite" aria-atomic="true">
+                <IconConfirmed /> <span>Confirmed</span>
+              </div>
+            )}
+          </header>
+          <h2 id="booking-summary-title" className="section-title">
+            Booking & Passenger Summary
+          </h2>
+          <article className="booking-info">
+            <p>
+              <strong>PNR/Booking ID:</strong> {booking.bookingID}
+            </p>
+            <div className="passengers-list" aria-label="Passengers">
+              {booking.passengers.map((p, idx) => (
+                <div key={idx} className="passenger-info">
+                  <IconUser aria-hidden="true" />
+                  <span>{p.name} (Seat: <strong>{p.seat}</strong>)</span>
+                </div>
+              ))}
+            </div>
+            <div className="contact-info">
+              <div>
+                <IconEmail aria-hidden="true" />
+                <a href={`mailto:${booking.contact.email}`}>{booking.contact.email}</a>
+              </div>
+              <div>
+                <IconPhone aria-hidden="true" />
+                <a href={`tel:${booking.contact.phone}`}>{booking.contact.phone}</a>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        {/* Flight Detail Card */}
+        <section className="card flight-detail-card" aria-labelledby="flight-detail-title">
+          <h2 id="flight-detail-title" className="section-title">Flight Details</h2>
+          <article className="flight-summary" aria-label="Flight information">
+            <div className="flight-info-top">
+              <img
+                src={flight.airlineLogo}
+                alt={`${flight.airlineName} logo`}
+                className="airline-logo"
+                loading="lazy"
+              />
+              <div className="flight-number">{flight.airlineName} - {flight.flightNumber}</div>
+            </div>
+            <div className="flight-timeline">
+              <div className="airport-block">
+                <time dateTime={flight.departure.date}>{flight.departure.date}</time>
+                <div 
+                  className="airport-code"
+                  title={flight.departure.airport}>{flight.departure.code}</div>
+                <div className="airport-detail">
+                  Terminal: {flight.departure.terminal}, Gate: {flight.departure.gate}
+                </div>
+                <time dateTime={`${flight.departure.date} ${flight.departure.time}`}>{flight.departure.time}</time>
+              </div>
+              <div className="timeline-center" aria-hidden="true">
+                <span className="dot" />
+                <div className="vertical-line" />
+                <span className="arrow-right" />
+                <div className="duration">
+                  {flight.duration}
+                  {flight.layover && <><br /><small className="layover">{flight.layover}</small></>}
+                </div>
+              </div>
+              <div className="airport-block arrival-block">
+                <time dateTime={flight.arrival.date}>{flight.arrival.date}</time>
+                <div
+                  className="airport-code"
+                  title={flight.arrival.airport}>
+                  {flight.arrival.code}
+                </div>
+                <div className="airport-detail">
+                  Terminal: {flight.arrival.terminal}, Gate: {flight.arrival.gate}
+                </div>
+                <time dateTime={`${flight.arrival.date} ${flight.arrival.time}`}>{flight.arrival.time}</time>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        {/* Seat Selector Section */}
+        <section className="card seat-selector" aria-labelledby="seat-selector-title">
+          <h2 id="seat-selector-title" className="section-title">
+            Select Your Seats
+          </h2>
+          <div className="seat-selector-scrollbox" role="list" aria-label="Seat selection grid">
+            {seatLayout.map(({ row, seats }) => (
+              <div key={row} className="seat-row" role="listitem" aria-label={`Row ${row}`}>
+                <span className="row-number">{row}</span>
+                {seats.map((seat, i) => {
+                  if (seat === null) {
+                    return <span key={`aisle-${row}-${i}`} className="aisle" aria-hidden="true" />;
+                  }
+                  const seatID = `${row}${seat.label}`;
+                  const isSelected = selectedSeats.includes(seatID);
+                  const seatClass = seat.booked
+                    ? "seat booked"
+                    : isSelected
+                    ? "seat selected"
+                    : "seat available";
+                  return (
+                    <button
+                      key={seatID}
+                      type="button"
+                      className={seatClass}
+                      aria-pressed={isSelected}
+                      aria-label={`${seatID} ${seat.booked ? "booked" : isSelected ? "selected" : "available"}`}
+                      onClick={() => toggleSeat(row, seat.label, seat.booked)}
+                      tabIndex={0}
+                    >
+                      {seat.label}
+                    </button>
+                  );
+                })}
+              </div>
+            ))}
+          </div>
+          {/* Seat Legend */}
+          <div className="seat-legend" aria-label="Seat legend">
+            <div><span className="legend-box available"></span> Available</div>
+            <div><span className="legend-box booked"></span> Booked</div>
+            <div><span className="legend-box selected"></span> Selected</div>
+          </div>
+          <div className="selected-seat-info" aria-live="polite">
+            Selected seats: {selectedSeats.length > 0 ? selectedSeats.join(", ") : "None"} — Total seat fare: ₹{selectedSeats.length * 500}
+          </div>
+        </section>
+
+        {/* Fare Breakdown Section */}
+        <section className="card fare-breakdown" aria-live="polite" aria-labelledby="fare-breakdown-title">
+          <h2 id="fare-breakdown-title" className="section-title collapsible-header">
+            Fare Summary
+            <button
+              aria-expanded="true" // Simplification, can add toggle state if collapsible desired
+              aria-controls="fare-breakdown-details"
+              className="collapsible-toggle"
+              type="button"
+            >
+              <IconChevronDown className="chevron-icon" />
+            </button>
+          </h2>
+          <article id="fare-breakdown-details" className="fare-details">
+            <div className="fare-row">
+              <span>Base Fare</span>
+              <span>₹{fare.baseFare}</span>
+            </div>
+            <div className="fare-row">
+              <span>Convenience Fee</span>
+              <span>₹{fare.convenienceFee}</span>
+            </div>
+            <div className="fare-row">
+              <span>Taxes</span>
+              <span>₹{fare.taxes}</span>
+            </div>
+            <div className="fare-row">
+              <span>Discounts</span>
+              <span className="discount">-₹{fare.discounts}</span>
+            </div>
+            <div className="fare-row fare-total">
+              <strong>Total</strong>
+              <strong>₹{totalFare}</strong>
+            </div>
+          </article>
+        </section>
+      </main>
+
+      {/* Right SidePanel Coupons & Offers */}
+      <aside className="side-panel" aria-label="Coupons and Offers" role="complementary">
+        <section className="card coupons-panel">
+          <h2 className="section-title">Available Coupons</h2>
+          {couponList.map((coupon) => (
+            <article
+              key={coupon.code}
+              className={`coupon-card ${coupon.bgColor}`}
+              aria-expanded={coupon.expanded}
+            >
+              <header className="coupon-header">
+                <strong className="coupon-code">{coupon.code}</strong>
+                <button
+                  type="button"
+                  aria-label={coupon.expanded ? "Collapse coupon" : "Expand coupon"}
+                  onClick={() => toggleCouponExpand(coupon.code)}
+                  className="expand-toggle"
+                >
+                  <IconChevronDown
+                    className={`chevron-icon ${coupon.expanded ? "expanded" : ""}`}
+                  />
+                </button>
+              </header>
+              <p className="coupon-desc">{coupon.description}</p>
+              {coupon.expanded && (
+                <div className="coupon-terms" aria-live="polite">
+                  <small>{coupon.terms}</small>
+                </div>
+              )}
+              <button
+                type="button"
+                className={`btn-apply ${coupon.applied ? "applied" : ""}`}
+                onClick={() => applyCoupon(coupon.code)}
+                aria-pressed={coupon.applied}
+              >
+                {coupon.applied ? "Applied" : "Apply"}
+              </button>
+            </article>
+          ))}
+        </section>
+      </aside>
+
+      {/* Footer Confirmation & Continue Button */}
+      <footer className="footer-confirmation" role="contentinfo">
+        <div className="footer-summary" aria-live="polite" aria-atomic="true">
+          Selected seats: {selectedSeats.length > 0 ? selectedSeats.join(", ") : "None"} | Total price: ₹{totalFare}
+        </div>
+        <button type="button" className="btn-proceed" aria-label="Proceed to payment">
+          🛒 Proceed to Payment
+        </button>
+      </footer>
+    </div>
+  );
+};
+
+export default FlightItineraryPage;
+
+
+
+
+
+
+
+
+/* FlightItineraryPage.css */
+
+/* CSS Variables */
+:root {
+  --primary-color: #2b6cb0; /* Blue */
+  --secondary-bg: #f7fafc; /* Light grey background */
+  --card-bg: #fff;
+  --card-shadow: rgba(0, 0, 0, 0.1);
+  --border-radius: 10px;
+  --font-family: 'Inter', 'Roboto', 'Poppins', sans-serif;
+  --color-text-primary: #2d3748;
+  --color-text-secondary: #4a5568;
+  --color-success: #38a169;
+  --color-error: #e53e3e;
+  --color-warning: #d69e2e;
+  --color-seat-available: #48bb78;
+  --color-seat-booked: #e53e3e;
+  --color-seat-selected: #3182ce;
+  --color-seat-not-available: #a0aec0;
+}
+
+/* Reset & base styles */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-family);
+  margin: 0;
+  background-color: var(--secondary-bg);
+  color: var(--color-text-primary);
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+.flight-itinerary-page {
+  display: flex;
+  flex-wrap: nowrap;
+  max-width: 1200px;
+  margin: 1.5rem auto;
+  padding: 0 1rem 6rem;
+  min-height: 100vh;
+  gap: 1.5rem;
+  background: var(--secondary-bg);
+}
+
+/* Left Side - Main Content */
+.main-content {
+  flex-basis: 70%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+/* Right Side - Sticky SidePanel */
+.side-panel {
+  flex-basis: 30%;
+  position: sticky;
+  top: 1.5rem;
+  align-self: flex-start;
+  height: fit-content;
+}
+
+/* Card Layout */
+.card {
+  background: var(--card-bg);
+  border-radius: var(--border-radius);
+  box-shadow: 0 2px 8px var(--card-shadow);
+  padding: 1rem 1.25rem;
+}
+
+/* Common Section Titles */
+.section-title {
+  font-weight: 600;
+  font-size: 1.3rem;
+  margin-bottom: 0.75rem;
+  color: var(--primary-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* === Booking & Passenger Summary === */
+.booking-summary {
+  background: #f0f9f4;
+  border: 1.5px solid var(--color-seat-available);
+}
+
+.booking-header {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+  color: var(--color-success);
+}
+
+.confirmed-status {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 1.1rem;
+}
+
+.booking-info p {
+  margin: 0.3rem 0;
+  font-weight: 500;
+}
+
+.passengers-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin: 0.8rem 0 0;
+}
+
+.passenger-info {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+.contact-info {
+  margin-top: 0.8rem;
+  color: var(--color-text-secondary);
+}
+
+.contact-info > div {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.95rem;
+  margin: 0.25rem 0;
+}
+
+.contact-info a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.contact-info a:hover,
+.contact-info a:focus {
+  text-decoration: underline;
+  color: var(--primary-color);
+}
+
+/* === Flight Detail Card === */
+.flight-detail-card {
+  background: var(--card-bg);
+}
+
+.flight-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.flight-info-top {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.8rem;
+}
+
+.airline-logo {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+}
+
+.flight-number {
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: var(--primary-color);
+}
+
+.flight-timeline {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.airport-block {
+  flex: 1 1 30%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+}
+
+.airport-code {
+  font-weight: 900;
+  font-size: 2rem;
+  color: var(--primary-color);
+  cursor: help;
+  text-transform: uppercase;
+}
+
+.airport-detail,
+.layover {
+  font-weight: 400;
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+  font-style: italic;
+}
+
+.timeline-center {
+  flex: 1 1 40%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: var(--primary-color);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.timeline-center .dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+  margin-bottom: 0.15rem;
+}
+
+.timeline-center .vertical-line {
+  width: 3px;
+  height: 60px;
+  background-color: var(--primary-color);
+  margin-bottom: 0.15rem;
+}
+
+.timeline-center .arrow-right {
+  width: 0;
+  height: 0;
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-left: 18px solid var(--primary-color);
+  margin-bottom: 0.15rem;
+}
+
+.duration {
+  font-weight: 700;
+  color: var(--primary-color);
+  text-align: center;
+}
+
+/* === Seat Selector Section === */
+.seat-selector {
+  background: var(--card-bg);
+}
+
+.seat-selector-scrollbox {
+  max-height: 240px;
+  overflow-y: auto;
+  border: 1.5px solid #e2e8f0;
+  border-radius: var(--border-radius);
+  padding: 8px 12px;
+  background: white;
+}
+
+.seat-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.row-number {
+  min-width: 32px;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  user-select: text;
+}
+
+.seat {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 2px solid transparent;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  user-select: none;
+  transition: all 0.25s ease;
+}
+
+.seat.available {
+  background-color: var(--color-seat-available);
+  border-color: var(--color-seat-available);
+  color: var(--color-text-primary);
+}
+
+.seat.booked {
+  background-color: var(--color-seat-not-available);
+  color: #6e6e6e;
+  cursor: not-allowed;
+  position: relative;
+  pointer-events: none;
+}
+
+.seat.booked::after {
+  content: "✕";
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  font-size: 1rem;
+  color: #767676;
+  font-weight: 900;
+}
+
+.seat.selected {
+  background-color: var(--color-seat-selected);
+  border-color: var(--color-seat-selected);
+  color: #fff;
+  box-shadow: 0 0 5px #3182ceaa;
+}
+
+.seat:hover:not(.booked) {
+  transform: scale(1.15);
+  box-shadow: 0 0 6px #48bb78aa;
+  border-color: #48bb78;
+}
+
+.seat-legend {
+  display: flex;
+  justify-content: flex-start;
+  gap: 1.5rem;
+  margin-top: 0.75rem;
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+}
+
+.legend-box {
+  width: 18px;
+  height: 18px;
+  display: inline-block;
+  border-radius: 5px;
+  border: 1.5px solid transparent;
+  vertical-align: middle;
+}
+
+.legend-box.available {
+  background-color: var(--color-seat-available);
+  border-color: var(--color-seat-available);
+}
+
+.legend-box.booked {
+  background-color: var(--color-seat-not-available);
+  border-color: var(--color-seat-not-available);
+}
+
+.legend-box.selected {
+  background-color: var(--color-seat-selected);
+  border-color: var(--color-seat-selected);
+}
+
+.selected-seat-info {
+  margin-top: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+/* === Fare Breakdown === */
+.fare-breakdown {
+  background: var(--card-bg);
+}
+
+.collapsible-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.collapsible-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--primary-color);
+  padding: 0;
+}
+
+.chevron-icon {
+  transition: transform 0.3s ease;
+}
+
+.chevron-icon.expanded {
+  transform: rotate(180deg);
+}
+
+.fare-details {
+  margin-top: 1rem;
+}
+
+.fare-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid #e2e8f0;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.fare-row.discount {
+  color: var(--color-error);
+}
+
+.fare-total {
+  font-weight: 800;
+  font-size: 1.15rem;
+  border-bottom: none;
+  margin-top: 0.4rem;
+}
+
+/* === Right Side Panel Coupons === */
+.coupons-panel {
+  background: var(--card-bg);
+  padding: 1rem;
+  box-shadow: 0 2px 8px var(--card-shadow);
+  border-radius: var(--border-radius);
+}
+
+.coupon-card {
+  padding: 0.8rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  box-shadow: 0 1px 6px rgb(0 0 0 / 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  position: relative;
+  user-select: none;
+}
+
+.coupon-card.yellow {
+  background-color: #fffbea;
+  border: 1.5px solid #d69e2e;
+}
+
+.coupon-card.blue {
+  background-color: #ebf8ff;
+  border: 1.5px solid #3182ce;
+}
+
+.coupon-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.coupon-code {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--primary-color);
+}
+
+.expand-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: var(--primary-color);
+  transition: transform 0.3s ease;
+}
+
+.chevron-icon.expanded {
+  transform: rotate(180deg);
+}
+
+.coupon-desc {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+}
+
+.coupon-terms {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  border-top: 1px solid #cbd5e0;
+  margin-top: 0.4rem;
+  padding-top: 0.3rem;
+  font-style: italic;
+}
+
+.btn-apply {
+  align-self: flex-start;
+  padding: 6px 14px;
+  font-weight: 600;
+  background-color: #bee3f8;
+  border-radius: 8px;
+  color: var(--primary-color);
+  border: none;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  margin-top: 0.5rem;
+}
+
+.btn-apply.applied {
+  background-color: #2b6cb0;
+  color: white;
+  cursor: default;
+}
+
+.btn-apply:hover:not(.applied),
+.btn-apply:focus-visible:not(.applied) {
+  background-color: #2b6cb0;
+  color: white;
+  outline: none;
+}
+
+/* === Footer === */
+.footer-confirmation {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100vw;
+  background-color: var(--card-bg);
+  box-shadow: 0 -5px 15px var(--card-shadow);
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  z-index: 1000;
+  user-select: none;
+  flex-wrap: wrap;
+}
+
+.footer-summary {
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--color-text-primary);
+  min-width: 200px;
+  flex-grow: 1;
+  user-select: text;
+}
+
+.btn-proceed {
+  background: linear-gradient(45deg, var(--primary-color), #2c5282);
+  border: none;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 1.1rem;
+  padding: 0.55rem 2rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  flex-shrink: 0;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-proceed:hover,
+.btn-proceed:focus {
+  background: linear-gradient(45deg, #2c5282, var(--primary-color));
+  outline: none;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 980px) {
+  .flight-itinerary-page {
+    flex-wrap: wrap;
+    padding-bottom: 8rem; /* for footer */
+  }
+
+  .main-content,
+  .side-panel {
+    flex-basis: 100%;
+  }
+  .side-panel {
+    position: relative;
+    top: auto;
+  }
+
+  .footer-confirmation {
+    padding: 1rem;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .btn-proceed {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .footer-summary {
+    margin-bottom: 0.5rem;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
