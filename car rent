@@ -1,0 +1,3504 @@
+// CarHome.js
+import React, { useState, useEffect, useMemo } from "react";
+import "./CarHome.css";
+
+/** --- Dummy Data --- **/
+const TRIP_TYPES = ["Hourly", "Outstation", "One Way", "Round Trip"];
+
+const PACKAGES = [
+  { id: "pkg1", label: "1 hr / 10 km", hours: 1, kms: 10 },
+  { id: "pkg2", label: "4 hr / 40 km", hours: 4, kms: 40 },
+  { id: "pkg3", label: "6 hr / 60 km", hours: 6, kms: 60 },
+  { id: "pkg4", label: "8 hr / 80 km", hours: 8, kms: 80 },
+  { id: "pkg5", label: "12 hr / 120 km", hours: 12, kms: 120 },
+];
+
+const OFFERS = [
+  { code: "CABTRIP", desc: "₹200 OFF" },
+  { code: "SAVE50", desc: "₹50 OFF on Next Ride" },
+  { code: "FREERIDE", desc: "5% Cashback" },
+  { code: "CAB500", desc: "₹500 OFF", discount: 500 }, // For coupon apply validation
+];
+
+const CARS = [
+  {
+    id: 1,
+    model: "Indica or similar",
+    rating: 4.5,
+    reviewsCount: 1498,
+    reviews: [
+      { user: "Raj", comment: "Comfortable and clean ride.", rating: 5 },
+      { user: "Sneha", comment: "Nice AC, friendly driver.", rating: 4 },
+      { user: "Arjun", comment: "Smooth trip overall.", rating: 4.5 },
+    ],
+    type: "HATCHBACK",
+    ac: true,
+    seats: 4,
+    luggage: 1,
+    baseFare: 418,
+    tax: 95,
+    unitFare: 26.2,
+    unitFareAfterKm: 10,
+    pricePerKmExtra: 12,
+    isMostBooked: false,
+    isTopRated: false,
+  },
+  {
+    id: 2,
+    model: "Swift or similar",
+    rating: 4.5,
+    reviewsCount: 1498,
+    reviews: [
+      { user: "Ravi", comment: "Great service and punctual.", rating: 4.5 },
+      { user: "Meena", comment: "Comfortable ride.", rating: 4 },
+    ],
+    type: "HATCHBACK",
+    ac: true,
+    seats: 4,
+    luggage: 1,
+    baseFare: 430,
+    tax: 100,
+    unitFare: 27,
+    unitFareAfterKm: 10,
+    pricePerKmExtra: 12,
+    isMostBooked: true,
+    isTopRated: false,
+  },
+  {
+    id: 3,
+    model: "Dzire or similar",
+    rating: 4.7,
+    reviewsCount: 1693,
+    reviews: [
+      { user: "Vijay", comment: "Very clean and AC was super cool.", rating: 5 },
+      { user: "Pooja", comment: "Driver was polite.", rating: 4.5 },
+    ],
+    type: "SEDAN",
+    ac: true,
+    seats: 4,
+    luggage: 2,
+    baseFare: 454,
+    tax: 95,
+    unitFare: 28.76,
+    unitFareAfterKm: 10,
+    pricePerKmExtra: 12,
+    isMostBooked: false,
+    isTopRated: true,
+  },
+  {
+    id: 4,
+    model: "Etios or similar",
+    rating: 4.7,
+    reviewsCount: 1693,
+    reviews: [
+      { user: "Sana", comment: "Smooth ride and great value.", rating: 4.5 },
+      { user: "Ajay", comment: "Good experience overall.", rating: 4.7 },
+    ],
+    type: "SEDAN",
+    ac: true,
+    seats: 4,
+    luggage: 2,
+    baseFare: 454,
+    tax: 95,
+    unitFare: 28.76,
+    unitFareAfterKm: 10,
+    pricePerKmExtra: 12,
+    isMostBooked: false,
+    isTopRated: false,
+  },
+  {
+    id: 5,
+    model: "Xylo or similar",
+    rating: 4.3,
+    reviewsCount: 246,
+    reviews: [
+      { user: "Kamal", comment: "Spacious and comfortable.", rating: 4 },
+      { user: "Deepa", comment: "Perfect for family trips.", rating: 4.5 },
+    ],
+    type: "SUV",
+    ac: true,
+    seats: 7,
+    luggage: 3,
+    baseFare: 602,
+    tax: 95,
+    unitFare: 45.66,
+    unitFareAfterKm: 10,
+    pricePerKmExtra: 12,
+    isMostBooked: false,
+    isTopRated: false,
+  },
+  {
+    id: 6,
+    model: "Ertiga or similar",
+    rating: 4.3,
+    reviewsCount: 246,
+    reviews: [
+      { user: "Mani", comment: "Good for group travel.", rating: 4 },
+      { user: "Leena", comment: "Comfort and space.", rating: 4.3 },
+    ],
+    type: "SUV",
+    ac: true,
+    seats: 7,
+    luggage: 3,
+    baseFare: 602,
+    tax: 95,
+    unitFare: 45.66,
+    unitFareAfterKm: 10,
+    pricePerKmExtra: 12,
+    isMostBooked: false,
+    isTopRated: true,
+  },
+];
+
+const POPULAR_DESTINATIONS = [
+  { name: "Marina Beach", icon: "🏖️" },
+  { name: "Mahabalipuram", icon: "🏛️" },
+  { name: "Guindy National Park", icon: "🌳" },
+  { name: "Thousand Lights Mosque", icon: "🕌" },
+  { name: "Valluvar Kottam", icon: "🏯" },
+  { name: "Elliot’s Beach", icon: "🌊" },
+];
+
+const FEATURES_LIST = [
+  { icon: "✔️", text: "Verified Drivers" },
+  { icon: "✔️", text: "Air Conditioned Cabs" },
+  { icon: "✔️", text: "Affordable Rates" },
+  { icon: "✔️", text: "No Hidden Charges" },
+  { icon: "✔️", text: "24/7 Customer Support" },
+  { icon: "✔️", text: "Multiple Car Models" },
+];
+
+/** --- Helper Components & Utils --- **/
+
+function StarRating({ rating }) {
+  const fullStars = Math.floor(rating);
+  const halfStar = rating - fullStars >= 0.5;
+  const stars = [];
+  for (let i = 0; i < fullStars; i++) {
+    stars.push(
+      <span key={"full" + i} className="star" aria-hidden="true">
+        ★
+      </span>
+    );
+  }
+  if (halfStar)
+    stars.push(
+      <span key="half" className="star" aria-hidden="true">
+        ☆
+      </span>
+    );
+  while (stars.length < 5) {
+    stars.push(
+      <span key={"empty" + stars.length} className="star" aria-hidden="true">
+        ☆
+      </span>
+    );
+  }
+  return (
+    <div className="stars" aria-label={`Rating ${rating} out of 5 stars`}>
+      {stars}
+    </div>
+  );
+}
+
+/** Modal wrapper */
+function Modal({ children, onClose, title, ariaLabel }) {
+  return (
+    <div
+      className="modal-backdrop"
+      role="dialog"
+      aria-modal="true"
+      aria-label={ariaLabel || title}
+      onClick={onClose}
+      tabIndex={-1}
+    >
+      <div
+        className="modal-content"
+        onClick={(e) => e.stopPropagation()}
+        tabIndex={0}
+      >
+        <header className="modal-header">
+          <h3>{title}</h3>
+          <button
+            className="modal-close-btn"
+            onClick={onClose}
+            aria-label="Close modal"
+          >
+            ×
+          </button>
+        </header>
+        <main className="modal-body">{children}</main>
+      </div>
+    </div>
+  );
+}
+
+/** --- Main Component --- **/
+const CarHome = () => {
+  /** Form Data **/
+  const [tripType, setTripType] = useState(TRIP_TYPES[0]);
+  const [pickupLocation, setPickupLocation] = useState("");
+  const [dateTime, setDateTime] = useState("");
+  const [selectedPackageId, setSelectedPackageId] = useState(PACKAGES[1].id);
+
+  /** Data **/
+  const [carList, setCarList] = useState([]);
+  const [offers, setOffers] = useState([]);
+  const [faqs, setFaqs] = useState([]);
+  const [loadingCars, setLoadingCars] = useState(true);
+
+  /** Reviews Modal **/
+  const [reviewsOpenForCar, setReviewsOpenForCar] = useState(null);
+
+  /** Booking Summary Drawer **/
+  const [bookingCar, setBookingCar] = useState(null);
+
+  /** Filter State **/
+  const [filters, setFilters] = useState({
+    ac: null, // true / false / null (any)
+    carType: "", // SUV / SEDAN / HATCHBACK / empty = any
+    priceRange: [0, 10000], // Min/Max price per km baseFare + tax approx
+    seats: 0, // 0 means any
+  });
+  const [sortBy, setSortBy] = useState(""); // priceAsc / ratingDesc / ""
+
+  /** Coupon State **/
+  const [couponModalOpen, setCouponModalOpen] = useState(false);
+  const [couponInput, setCouponInput] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
+
+  /** Responsive: Mobile Bottom Search sticky **/
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    // Detect mobile viewport for sticky bottom search button
+    function handleResize() {
+      setIsMobile(window.innerWidth <= 768);
+    }
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  /** Fetch simulation **/
+  useEffect(() => {
+    // Simulate delayed fetch for cars, offers, faqs
+    setLoadingCars(true);
+    let timer = setTimeout(() => {
+      setCarList(CARS);
+      setOffers(OFFERS);
+      setFaqs([
+        {
+          question:
+            "Are toll charges included in the trip fare of hourly car rental in Chennai?",
+          answer:
+            "No, additional charges like toll and parking charges from external authorities are not included with the trip fare.",
+        },
+        {
+          question: "Which car should I book to keep the prices low?",
+          answer:
+            "The cab booking prices vary with the city. Check out offers and discounts to further cut down your travel costs.",
+        },
+        {
+          question: "What are the car types available for booking?",
+          answer:
+            "You can commonly book Hatchbacks, Sedans, and SUVs for car rental in Chennai.",
+        },
+      ]);
+      setLoadingCars(false);
+    }, 800);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  /** Helper to find selected package details **/
+  const selectedPackage = useMemo(
+    () => PACKAGES.find((p) => p.id === selectedPackageId),
+    [selectedPackageId]
+  );
+
+  /** === Filters & Sorting === **/
+  const handleFilterChange = (field, value) => {
+    setFilters((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  const handleSortChange = (e) => {
+    setSortBy(e.target.value);
+  };
+
+  const filteredCars = useMemo(() => {
+    let filtered = [...carList];
+
+    // Apply filters
+    if (filters.ac !== null) {
+      filtered = filtered.filter((car) => car.ac === filters.ac);
+    }
+    if (filters.carType) {
+      filtered = filtered.filter(
+        (car) => car.type.toLowerCase() === filters.carType.toLowerCase()
+      );
+    }
+    if (filters.seats > 0) {
+      filtered = filtered.filter((car) => car.seats >= filters.seats);
+    }
+    if (filters.priceRange) {
+      filtered = filtered.filter((car) => {
+        const approxPrice = car.baseFare + car.tax;
+        return (
+          approxPrice >= filters.priceRange[0] &&
+          approxPrice <= filters.priceRange[1]
+        );
+      });
+    }
+
+    // Sorting
+    if (sortBy === "priceAsc") {
+      filtered.sort((a, b) => a.baseFare + a.tax - (b.baseFare + b.tax));
+    } else if (sortBy === "ratingDesc") {
+      filtered.sort((a, b) => b.rating - a.rating);
+    }
+
+    return filtered;
+  }, [carList, filters, sortBy]);
+
+  /** --- Handlers --- **/
+
+  function handleSearch(e) {
+    e.preventDefault();
+    const formData = {
+      tripType,
+      pickupLocation,
+      dateTime,
+      selectedPackage: selectedPackage.label,
+      filters,
+      sortBy,
+      appliedCoupon: appliedCoupon ? appliedCoupon.code : null,
+    };
+    console.log("Search Data:", formData);
+    alert(
+      `Search submitted for ${tripType} trip from ${pickupLocation} with package ${selectedPackage.label}`
+    );
+  }
+
+  function handleBook(carId) {
+    const car = carList.find((c) => c.id === carId);
+    if (car) {
+      setBookingCar(car);
+    }
+  }
+
+  function handleReviewOpen(carId) {
+    setReviewsOpenForCar(carId);
+  }
+
+  function handleReviewClose() {
+    setReviewsOpenForCar(null);
+  }
+
+  /** Calculate Est. Fare for a car with selected package **/
+  function calculateFare(car) {
+    if (!selectedPackage) return 0;
+    const includedKm = car.unitFareAfterKm;
+    const includedHours = selectedPackage.hours;
+    const totalIncludedKm = selectedPackage.kms;
+
+    // formula: base price + (extra kms * ₹12)
+    const extraKm = totalIncludedKm - includedKm > 0 ? totalIncludedKm - includedKm : 0;
+
+    const fare =
+      car.baseFare + car.tax + extraKm * car.pricePerKmExtra;
+
+    return fare;
+  }
+
+  /** Coupon Application Logic **/
+  function handleApplyCoupon() {
+    const code = couponInput.trim().toUpperCase();
+    const found = OFFERS.find((o) => o.code === code);
+    if (!found || !found.discount) {
+      alert("Invalid or non-applicable coupon code.");
+      return;
+    }
+    setAppliedCoupon(found);
+    setCouponModalOpen(false);
+    alert(`Coupon "${found.code}" applied. You get ₹${found.discount} OFF!`);
+  }
+
+  /** Booking Confirmation **/
+  function confirmBooking() {
+    alert(
+      `Booking Confirmed: ${bookingCar.model} for ${tripType} (${selectedPackage.label})`
+    );
+    setBookingCar(null);
+  }
+
+  /** Reset Coupon **/
+  const removeCoupon = () => {
+    setAppliedCoupon(null);
+  };
+
+  /** Filter Bar Collapse State **/
+  const [filterOpen, setFilterOpen] = useState(true);
+
+  return (
+    <div className="car-home container" aria-live="polite">
+      {/* Booking Form */}
+      <section className="booking-form card" aria-label="Booking Form">
+        <h2 className="section-title">Book Your Cab</h2>
+        <div
+          className="trip-type-selector"
+          role="tablist"
+          aria-label="Select Trip Type"
+        >
+          {TRIP_TYPES.map((type) => (
+            <button
+              key={type}
+              type="button"
+              className={`trip-type-btn ${tripType === type ? "active" : ""}`}
+              onClick={() => setTripType(type)}
+              aria-selected={tripType === type}
+              role="tab"
+            >
+              {type}
+            </button>
+          ))}
+        </div>
+
+        <form onSubmit={handleSearch} className="search-form" noValidate>
+          <div className="form-row">
+            <label htmlFor="pickupLocation">Pickup Location</label>
+            <input
+              id="pickupLocation"
+              type="text"
+              placeholder="Enter pickup location"
+              value={pickupLocation}
+              onChange={(e) => setPickupLocation(e.target.value)}
+              required
+              aria-required="true"
+            />
+          </div>
+          <div className="form-row">
+            <label htmlFor="dateTime">Date & Time</label>
+            <input
+              id="dateTime"
+              type="datetime-local"
+              value={dateTime}
+              onChange={(e) => setDateTime(e.target.value)}
+              required
+              aria-required="true"
+            />
+          </div>
+
+          {/* Package Selector - Horizontal Scroll */}
+          <fieldset className="package-selector" aria-label="Select Package">
+            <legend>Choose Package</legend>
+            <div className="package-scroll">
+              {PACKAGES.map((pkg) => (
+                <button
+                  key={pkg.id}
+                  type="button"
+                  className={`package-item ${
+                    selectedPackageId === pkg.id ? "selected" : ""
+                  }`}
+                  onClick={() => setSelectedPackageId(pkg.id)}
+                  aria-pressed={selectedPackageId === pkg.id}
+                >
+                  {pkg.label}
+                </button>
+              ))}
+            </div>
+          </fieldset>
+
+          {/* Search button desktop */}
+          {!isMobile && (
+            <button className="btn btn-primary" type="submit">
+              Search Cabs
+            </button>
+          )}
+        </form>
+      </section>
+
+      {/* Filter & Sort Bar */}
+      <section
+        className={`filter-bar card ${filterOpen ? "open" : "closed"}`}
+        aria-label="Filter and Sorting Options"
+      >
+        <header className="filter-bar-header">
+          <h2 className="section-title">Filter & Sort</h2>
+          <button
+            className="btn-toggle-filter"
+            onClick={() => setFilterOpen((o) => !o)}
+            aria-expanded={filterOpen}
+            aria-controls="filter-options"
+            aria-label={filterOpen ? "Collapse filters" : "Expand filters"}
+            type="button"
+          >
+            {filterOpen ? "−" : "+"}
+          </button>
+        </header>
+        {filterOpen && (
+          <div id="filter-options" className="filter-options">
+            {/* Filter AC */}
+            <div className="filter-group">
+              <span className="filter-label">AC</span>
+              <div role="radiogroup" aria-label="Filter by AC or Non-AC">
+                <button
+                  type="button"
+                  className={`filter-btn ${
+                    filters.ac === null ? "active" : ""
+                  }`}
+                  onClick={() => handleFilterChange("ac", null)}
+                  aria-pressed={filters.ac === null}
+                >
+                  Any
+                </button>
+                <button
+                  type="button"
+                  className={`filter-btn ${filters.ac === true ? "active" : ""}`}
+                  onClick={() => handleFilterChange("ac", true)}
+                  aria-pressed={filters.ac === true}
+                >
+                  AC
+                </button>
+                <button
+                  type="button"
+                  className={`filter-btn ${
+                    filters.ac === false ? "active" : ""
+                  }`}
+                  onClick={() => handleFilterChange("ac", false)}
+                  aria-pressed={filters.ac === false}
+                >
+                  Non-AC
+                </button>
+              </div>
+            </div>
+
+            {/* Filter Car Type */}
+            <div className="filter-group">
+              <label htmlFor="carTypeSelect">Car Type</label>
+              <select
+                id="carTypeSelect"
+                value={filters.carType}
+                onChange={(e) => handleFilterChange("carType", e.target.value)}
+              >
+                <option value="">Any</option>
+                <option value="SUV">SUV</option>
+                <option value="SEDAN">Sedan</option>
+                <option value="HATCHBACK">Hatchback</option>
+              </select>
+            </div>
+
+            {/* Filter Seats */}
+            <div className="filter-group">
+              <label htmlFor="seatCountInput">Minimum Seats</label>
+              <input
+                id="seatCountInput"
+                type="number"
+                min="0"
+                max="10"
+                value={filters.seats}
+                onChange={(e) =>
+                  handleFilterChange("seats", Number(e.target.value))
+                }
+                placeholder="Any"
+                aria-label="Minimum seat count"
+              />
+            </div>
+
+            {/* Filter Price Range */}
+            <div className="filter-group">
+              <label htmlFor="priceMinInput">Price Range (Base+Tax) ₹</label>
+              <div className="price-range-inputs">
+                <input
+                  id="priceMinInput"
+                  type="number"
+                  min="0"
+                  max="10000"
+                  value={filters.priceRange[0]}
+                  onChange={(e) =>
+                    handleFilterChange("priceRange", [
+                      Number(e.target.value),
+                      filters.priceRange[1],
+                    ])
+                  }
+                  aria-label="Minimum price"
+                />
+                <span className="price-range-sep">–</span>
+                <input
+                  id="priceMaxInput"
+                  type="number"
+                  min="0"
+                  max="10000"
+                  value={filters.priceRange[1]}
+                  onChange={(e) =>
+                    handleFilterChange("priceRange", [
+                      filters.priceRange[0],
+                      Number(e.target.value),
+                    ])
+                  }
+                  aria-label="Maximum price"
+                />
+              </div>
+            </div>
+
+            {/* Sort By */}
+            <div className="filter-group">
+              <label htmlFor="sortBySelect">Sort By</label>
+              <select
+                id="sortBySelect"
+                value={sortBy}
+                onChange={handleSortChange}
+              >
+                <option value="">None</option>
+                <option value="priceAsc">Price Low to High</option>
+                <option value="ratingDesc">Rating High to Low</option>
+              </select>
+            </div>
+          </div>
+        )}
+      </section>
+
+      {/* Offers Banner */}
+      <section className="offers-section" aria-label="Offers and Coupons">
+        <h2 className="section-title red-title">Exciting Offers</h2>
+        <div className="offers-grid">
+          {offers.map(({ code, desc }) => (
+            <div
+              key={code}
+              className="offer-card"
+              tabIndex={0}
+              aria-label={`Coupon code ${code}, ${desc}`}
+            >
+              <div className="offer-code">{code}</div>
+              <div className="offer-desc">{desc}</div>
+              <button
+                className="btn-apply-coupon"
+                onClick={() => {
+                  setCouponInput(code);
+                  setCouponModalOpen(true);
+                }}
+                aria-label={`Apply coupon ${code}`}
+                type="button"
+              >
+                Apply Coupon
+              </button>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Car List */}
+      <section
+        className="car-list-section"
+        aria-label="Available cars for rental"
+      >
+        <h2 className="section-title">Available Cars in Chennai</h2>
+
+        {loadingCars && (
+          <div className="loading-state" role="status" aria-live="polite">
+            <div className="spinner" aria-hidden="true"></div>
+            Loading cars...
+          </div>
+        )}
+
+        {!loadingCars && filteredCars.length === 0 && (
+          <div className="empty-state" role="alert">
+            No cars available matching your filters.
+          </div>
+        )}
+
+        <div
+          className="car-list"
+          style={{
+            gridTemplateColumns: isMobile
+              ? "1fr"
+              : "repeat(auto-fit, minmax(280px, 1fr))",
+          }}
+        >
+          {filteredCars.map((car) => {
+            const fare = calculateFare(car);
+            const discountedFare =
+              appliedCoupon && appliedCoupon.discount
+                ? Math.max(0, fare - appliedCoupon.discount)
+                : fare;
+
+            return (
+              <article
+                key={car.id}
+                className="car-card"
+                tabIndex={0}
+                aria-label={`Car model ${car.model}, rating ${car.rating}, price ₹${fare.toFixed(
+                  0
+                )}`}
+              >
+                <div className="car-header">
+                  <h3 className="car-model">{car.model}</h3>
+
+                  {/* Badges */}
+                  <div className="car-badges" aria-label="Badge Information">
+                    {car.isMostBooked && (
+                      <span className="badge badge-most-booked" title="Most Booked">
+                        🏆 Most Booked
+                      </span>
+                    )}
+                    {car.isTopRated && (
+                      <span className="badge badge-top-rated" title="Top Rated">
+                        ⭐ Top Rated
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <div className="car-rating-row">
+                  <StarRating rating={car.rating} />
+                  <span className="car-reviews">({car.reviewsCount} ratings)</span>
+                </div>
+
+                <ul className="car-features">
+                  <li>{car.type}</li>
+                  <li>{car.seats} Seats</li>
+                  <li>{car.ac ? "AC" : "Non-AC"}</li>
+                  <li>
+                    {car.luggage} Luggage Bag{car.luggage > 1 ? "s" : ""}
+                  </li>
+                  <li>10 kms included</li>
+                  <li>₹{car.unitFare}/km after {car.unitFareAfterKm} kms</li>
+                </ul>
+
+                <div className="fare-info" aria-live="polite">
+                  <strong>
+                    Est. Fare: ₹{fare.toFixed(0)} (
+                    {selectedPackage.label})
+                  </strong>
+                  {appliedCoupon && (
+                    <div className="fare-discounted">
+                      After Coupon (
+                      <button
+                        className="btn-remove-coupon"
+                        onClick={removeCoupon}
+                        aria-label="Remove coupon"
+                        type="button"
+                      >
+                        ×
+                      </button>
+                      ) ₹{discountedFare.toFixed(0)}
+                    </div>
+                  )}
+                </div>
+
+                <div className="car-card-actions">
+                  <button
+                    className="btn btn-secondary"
+                    type="button"
+                    onClick={() => handleReviewOpen(car.id)}
+                    aria-label={`View reviews for ${car.model}`}
+                  >
+                    View Reviews
+                  </button>
+
+                  <button
+                    className="btn btn-primary btn-book"
+                    type="button"
+                    onClick={() => handleBook(car.id)}
+                    aria-label={`Book now ${car.model}`}
+                  >
+                    Book Now
+                  </button>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* Popular Destinations */}
+      <section
+        className="highlights-section"
+        aria-label="Popular Chennai Destinations"
+      >
+        <h2 className="section-title">Popular Destinations</h2>
+        <div className="highlights-grid">
+          {POPULAR_DESTINATIONS.map(({ name, icon }) => (
+            <div
+              key={name}
+              className="highlight-card"
+              tabIndex={0}
+              aria-label={name}
+              role="img"
+              aria-describedby={`desc-${name.replace(/\s+/g, "-")}`}
+            >
+              <span className="highlight-icon" aria-hidden="true">
+                {icon}
+              </span>
+              <div id={`desc-${name.replace(/\s+/g, "-")}`} className="highlight-name">
+                {name}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="features-section" aria-label="Service Features">
+        <h2 className="section-title">Why Book With Us?</h2>
+        <div className="features-grid">
+          {FEATURES_LIST.map(({ icon, text }, idx) => (
+            <div key={idx} className="feature-item">
+              <span className="feature-icon" aria-hidden="true">
+                {icon}
+              </span>
+              <span className="feature-text">{text}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="faq-section" aria-label="Frequently Asked Questions">
+        <h2 className="section-title">Frequently Asked Questions</h2>
+        <div className="faq-list">
+          {faqs.map(({ question, answer }, idx) => {
+            const isOpen = false; // Static, can add toggle later if needed
+            return (
+              <div
+                key={idx}
+                className="faq-item"
+                tabIndex={0}
+                aria-expanded={isOpen}
+                aria-controls={`faq-answer-${idx}`}
+              >
+                <div className="faq-question">{question}</div>
+                <div id={`faq-answer-${idx}`} className="faq-answer">
+                  <p>{answer}</p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* Coupon Modal */}
+      {couponModalOpen && (
+        <Modal
+          title="Apply Coupon Code"
+          onClose={() => setCouponModalOpen(false)}
+          ariaLabel="Coupon application modal"
+        >
+          <div className="modal-row">
+            <label htmlFor="couponCodeInput">Coupon Code:</label>
+            <input
+              id="couponCodeInput"
+              type="text"
+              value={couponInput}
+              onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
+              autoFocus
+              aria-describedby="couponInstructions"
+            />
+          </div>
+          <p id="couponInstructions" className="coupon-instructions">
+            Enter a valid coupon code to get discounts.
+          </p>
+          <div className="modal-actions">
+            <button
+              className="btn btn-primary"
+              onClick={handleApplyCoupon}
+              type="button"
+            >
+              Apply
+            </button>
+            <button
+              className="btn btn-secondary"
+              onClick={() => setCouponModalOpen(false)}
+              type="button"
+            >
+              Cancel
+            </button>
+          </div>
+        </Modal>
+      )}
+
+      {/* Reviews Modal */}
+      {reviewsOpenForCar !== null && (
+        <Modal
+          title="User Reviews"
+          onClose={handleReviewClose}
+          ariaLabel="Car reviews modal"
+        >
+          {(() => {
+            const car = carList.find((c) => c.id === reviewsOpenForCar);
+            if (!car) return <p>No reviews found.</p>;
+            return (
+              <>
+                <h4>{car.model}</h4>
+                <div className="reviews-list">
+                  {car.reviews.slice(0, 3).map(({ user, comment, rating }, i) => (
+                    <div key={i} className="review-card">
+                      <strong>{user}</strong>
+                      <StarRating rating={rating} />
+                      <p>{comment}</p>
+                    </div>
+                  ))}
+                  {car.reviews.length > 3 && (
+                    <p className="more-reviews">
+                      And {car.reviews.length - 3} more reviews...
+                    </p>
+                  )}
+                </div>
+              </>
+            );
+          })()}
+        </Modal>
+      )}
+
+      {/* Booking Summary Drawer */}
+      {bookingCar && (
+        <Modal
+          title="Booking Summary"
+          onClose={() => setBookingCar(null)}
+          ariaLabel="Booking summary modal"
+        >
+          <div className="booking-summary" aria-live="polite">
+            <h3>{bookingCar.model}</h3>
+            <ul className="summary-list">
+              <li>
+                <strong>Trip Type:</strong> {tripType}
+              </li>
+              <li>
+                <strong>Pickup Location:</strong> {pickupLocation || "N/A"}
+              </li>
+              <li>
+                <strong>Date & Time:</strong>{" "}
+                {dateTime
+                  ? new Date(dateTime).toLocaleString()
+                  : "Not selected"}
+              </li>
+              <li>
+                <strong>Package:</strong> {selectedPackage.label}
+              </li>
+              <li>
+                <strong>Estimated Fare:</strong> ₹
+                {(() => {
+                  const fare = calculateFare(bookingCar);
+                  const withDiscount =
+                    appliedCoupon && appliedCoupon.discount
+                      ? Math.max(0, fare - appliedCoupon.discount)
+                      : fare;
+                  return withDiscount.toFixed(0);
+                })()}
+              </li>
+              {appliedCoupon && (
+                <li>
+                  <strong>Coupon Applied:</strong> {appliedCoupon.code}
+                </li>
+              )}
+            </ul>
+
+            <div className="modal-actions">
+              <button
+                className="btn btn-primary"
+                onClick={confirmBooking}
+                type="button"
+              >
+                Confirm Booking
+              </button>
+              <button
+                className="btn btn-secondary"
+                onClick={() => setBookingCar(null)}
+                type="button"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </Modal>
+      )}
+
+      {/* Mobile Sticky Search Button */}
+      {isMobile && (
+        <button
+          className="btn btn-primary sticky-search-btn"
+          type="submit"
+          aria-label="Search Cabs"
+          onClick={(e) => {
+            // For mobile, just trigger the main form search handler programmatically
+            document
+              .querySelector(".booking-form form")
+              .dispatchEvent(new Event("submit", { cancelable: true, bubbles: true }));
+          }}
+        >
+          Search Cabs
+        </button>
+      )}
+    </div>
+  );
+};
+
+export default CarHome;
+
+
+
+
+
+
+/* CarHome.css */
+:root {
+  --red: #d32f2f;
+  --dark-red: #b72828;
+  --light-grey: #f9f9f9;
+  --dark-grey: #555;
+  --white: #fff;
+  --shadow: rgba(0, 0, 0, 0.1);
+  --border-radius: 8px;
+  --fade-dark: rgba(0, 0, 0, 0.6);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: var(--white);
+  color: #333;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 1rem auto 4rem auto;
+  padding: 0 1rem;
+}
+
+/* Section Titles */
+.section-title {
+  font-weight: 700;
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  color: var(--dark-grey);
+}
+
+.red-title {
+  color: var(--red);
+  border-left: 4px solid var(--red);
+  padding-left: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+/* Card base */
+.card {
+  background: var(--white);
+  box-shadow: 0 3px 12px var(--shadow);
+  border-radius: var(--border-radius);
+  padding: 1.5rem 2rem;
+  margin-bottom: 2rem;
+}
+
+/* Booking Form */
+.booking-form {
+  max-width: 700px;
+  margin: 0 auto 3rem auto;
+}
+
+.trip-type-selector {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.trip-type-btn {
+  background: #fff;
+  border: 2px solid var(--red);
+  color: var(--red);
+  padding: 0.45rem 1.15rem;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: var(--border-radius);
+  transition: all 0.3s ease;
+  min-width: 80px;
+  text-align: center;
+}
+
+.trip-type-btn.active,
+.trip-type-btn:hover,
+.trip-type-btn:focus {
+  background: var(--red);
+  color: var(--white);
+  outline: none;
+}
+
+.search-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 1.3rem 1.5rem;
+}
+
+.search-form .form-row {
+  display: flex;
+  flex-direction: column;
+}
+
+.search-form label {
+  font-size: 0.9rem;
+  margin-bottom: 0.4rem;
+  color: #555;
+}
+
+.search-form input[type="text"],
+.search-form input[type="datetime-local"],
+.search-form select {
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--border-radius);
+  border: 1.5px solid #ddd;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.search-form input[type="text"]:focus,
+.search-form input[type="datetime-local"]:focus,
+.search-form select:focus {
+  outline: none;
+  border-color: var(--red);
+}
+
+.search-form button.btn-primary {
+  grid-column: 1 / -1;
+  padding: 0.75rem;
+  background-color: var(--red);
+  border: none;
+  color: var(--white);
+  font-weight: 700;
+  font-size: 1.15rem;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.search-form button.btn-primary:hover,
+.search-form button.btn-primary:focus {
+  background-color: var(--dark-red);
+  outline: none;
+}
+
+/* Package Selector */
+.package-selector {
+  grid-column: 1 / -1;
+}
+
+.package-selector legend {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--dark-grey);
+}
+
+.package-scroll {
+  display: flex;
+  overflow-x: auto;
+  gap: 0.8rem;
+  padding-bottom: 0.6rem;
+}
+
+.package-item {
+  flex: 0 0 auto;
+  padding: 0.5rem 1rem;
+  border-radius: var(--border-radius);
+  border: 2px solid var(--red);
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  background: #fff;
+  color: var(--red);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.package-item.selected,
+.package-item:hover,
+.package-item:focus {
+  background-color: var(--red);
+  color: #fff;
+  outline: none;
+}
+
+/* Filter Bar */
+.filter-bar {
+  transition: max-height 0.3s ease, padding 0.3s ease;
+}
+
+.filter-bar.closed {
+  max-height: 48px;
+  padding: 0 1.5rem 0 1.5rem;
+  overflow: hidden;
+}
+
+.filter-bar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.btn-toggle-filter {
+  font-size: 2rem;
+  background: none;
+  border: none;
+  color: var(--red);
+  cursor: pointer;
+  font-weight: 600;
+  padding: 0;
+  user-select: none;
+}
+
+.filter-options {
+  margin-top: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 2rem;
+}
+
+.filter-group {
+  min-width: 150px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.filter-label {
+  font-weight: 700;
+  color: var(--dark-grey);
+}
+
+/* Filter buttons */
+.filter-btn {
+  background: #fff;
+  border: 2px solid var(--red);
+  color: var(--red);
+  padding: 0.3rem 0.8rem;
+  border-radius: var(--border-radius);
+  font-weight: 600;
+  cursor: pointer;
+  margin-right: 0.3rem;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  user-select: none;
+  min-width: 50px;
+  text-align: center;
+}
+
+.filter-btn.active,
+.filter-btn:hover,
+.filter-btn:focus {
+  background-color: var(--red);
+  color: var(--white);
+  outline: none;
+}
+
+/* Price range inputs */
+.price-range-inputs {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.price-range-sep {
+  font-weight: 700;
+  color: var(--dark-grey);
+  user-select: none;
+}
+
+.filter-group label {
+  font-weight: 600;
+  color: var(--dark-grey);
+}
+
+.filter-group input,
+.filter-group select {
+  padding: 0.3rem 0.5rem;
+  border-radius: var(--border-radius);
+  border: 1.5px solid #ddd;
+  font-size: 1rem;
+  width: 100%;
+  transition: border-color 0.3s ease;
+}
+
+.filter-group input:focus,
+.filter-group select:focus {
+  outline: none;
+  border-color: var(--red);
+}
+
+/* Offers Section */
+.offers-section {
+  margin-bottom: 3rem;
+}
+
+.offers-grid {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.offer-card {
+  position: relative;
+  border: 2px solid var(--red);
+  border-radius: var(--border-radius);
+  background: var(--white);
+  padding: 1rem 1.5rem;
+  width: 160px;
+  box-shadow: 0 2px 6px var(--shadow);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-weight: 600;
+  color: var(--red);
+  user-select: none;
+  transition: box-shadow 0.25s ease;
+}
+
+.offer-card:focus,
+.offer-card:hover {
+  box-shadow: 0 5px 15px rgba(211, 47, 47, 0.4);
+  outline: none;
+}
+
+.offer-code {
+  font-size: 1.5rem;
+  letter-spacing: 2px;
+  margin-bottom: 0.2rem;
+}
+
+.offer-desc {
+  font-size: 1rem;
+  color: var(--dark-grey);
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.btn-apply-coupon {
+  background-color: var(--red);
+  border: none;
+  border-radius: var(--border-radius);
+  color: var(--white);
+  font-size: 0.95rem;
+  padding: 0.3rem 0.75rem;
+  cursor: pointer;
+  font-weight: 600;
+  user-select: none;
+  transition: background-color 0.3s ease;
+}
+
+.btn-apply-coupon:hover,
+.btn-apply-coupon:focus {
+  background-color: var(--dark-red);
+  outline: none;
+}
+
+/* Car List */
+.car-list-section {
+  margin-bottom: 3rem;
+}
+
+.loading-state,
+.empty-state {
+  text-align: center;
+  color: var(--dark-grey);
+  font-size: 1.2rem;
+  padding: 2rem 0;
+}
+
+.spinner {
+  margin: 0 auto 1rem auto;
+  border: 4px solid var(--light-grey);
+  border-top: 4px solid var(--red);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 0.8s linear infinite;
+}
+
+/* spinner animation */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.car-list {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.car-card {
+  background: var(--white);
+  box-shadow: 0 3px 12px var(--shadow);
+  border-radius: var(--border-radius);
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: default;
+}
+
+.car-card:hover,
+.car-card:focus-within {
+  box-shadow: 0 8px 22px rgba(211, 47, 47, 0.4);
+  outline: none;
+  transform: translateY(-6px);
+}
+
+.car-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.car-model {
+  font-weight: 700;
+  font-size: 1.3rem;
+  color: var(--red);
+  margin-bottom: 0.4rem;
+  max-width: 70%;
+}
+
+.car-badges {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.badge {
+  background-color: var(--light-grey);
+  padding: 0.15rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--red);
+  user-select: none;
+  white-space: nowrap;
+}
+
+.badge-most-booked {
+  background-color: #ffd70020;
+  color: #b8860b;
+}
+
+.badge-top-rated {
+  background-color: #ffeaea;
+  color: var(--red);
+}
+
+.car-rating-row {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-bottom: 0.7rem;
+  color: var(--dark-grey);
+  font-size: 0.9rem;
+}
+
+.stars {
+  color: #fbc02d;
+  font-size: 1rem;
+}
+
+.star {
+  margin-right: 2px;
+  display: inline-block;
+}
+
+.car-reviews {
+  font-size: 0.85rem;
+  color: #888;
+}
+
+.car-features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem 1rem;
+  font-size: 0.9rem;
+  color: var(--dark-grey);
+}
+
+.car-features li {
+  background: var(--light-grey);
+  border-radius: 15px;
+  padding: 0.2rem 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  font-weight: 600;
+  user-select: none;
+}
+
+.fare-info {
+  margin-bottom: 0.8rem;
+  font-weight: 700;
+  color: var(--red);
+  user-select: none;
+}
+
+.fare-discounted {
+  margin-top: 0.25rem;
+  font-weight: 600;
+  color: #388e3c;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-remove-coupon {
+  background: transparent;
+  border: none;
+  color: #388e3c;
+  font-weight: 900;
+  font-size: 1rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.car-card-actions {
+  margin-top: auto;
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.btn {
+  padding: 0.5rem 1rem;
+  border-radius: var(--border-radius);
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  border: none;
+  transition: background-color 0.3s ease;
+  user-select: none;
+}
+
+.btn-primary {
+  background-color: var(--red);
+  color: var(--white);
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+  background-color: var(--dark-red);
+  outline: none;
+}
+
+.btn-secondary {
+  background-color: var(--light-grey);
+  color: var(--dark-grey);
+}
+
+.btn-secondary:hover,
+.btn-secondary:focus {
+  background-color: #eaeaea;
+  outline: none;
+}
+
+.btn-book {
+  flex: 1 1 auto;
+}
+
+.btn-secondary {
+  flex: 1 1 auto;
+  text-align: center;
+}
+
+/* Popular Destinations */
+.highlights-section {
+  margin-bottom: 3rem;
+}
+
+.highlights-grid {
+  display: grid;
+  gap: 1rem 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  justify-items: center;
+}
+
+.highlight-card {
+  background: var(--white);
+  box-shadow: 0 3px 12px var(--shadow);
+  border-radius: var(--border-radius);
+  padding: 1.2rem;
+  width: 130px;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.25s ease, border-color 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.highlight-card:hover,
+.highlight-card:focus {
+  transform: scale(1.07);
+  border-color: var(--red);
+  outline: none;
+}
+
+.highlight-icon {
+  font-size: 2.8rem;
+  margin-bottom: 0.6rem;
+}
+
+.highlight-name {
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--dark-grey);
+}
+
+/* Features Section */
+.features-section {
+  background: var(--light-grey);
+  padding: 2rem 1rem;
+  border-radius: var(--border-radius);
+  margin-bottom: 3rem;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem 2rem;
+  justify-items: flex-start;
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--dark-grey);
+  user-select: none;
+}
+
+.feature-icon {
+  font-size: 1.5rem;
+  color: var(--red);
+}
+
+/* FAQ Section */
+.faq-section {
+  margin-bottom: 4rem;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.faq-list {
+  border-radius: var(--border-radius);
+}
+
+.faq-item {
+  background: var(--white);
+  border-radius: var(--border-radius);
+  box-shadow: 0 3px 12px var(--shadow);
+  margin-bottom: 1rem;
+  padding: 1rem 1.5rem;
+  outline-offset: 3px;
+}
+
+.faq-question {
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: var(--red);
+  margin-bottom: 0.3rem;
+}
+
+.faq-answer p {
+  color: var(--dark-grey);
+  margin: 0.3rem 0;
+}
+
+/* Modal Styles */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: var(--fade-dark);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9000;
+  padding: 1rem;
+  overflow-y: auto;
+}
+
+.modal-content {
+  background: var(--white);
+  border-radius: var(--border-radius);
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 0 25px rgba(211, 47, 47, 0.7);
+  outline: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--red);
+  color: #fff;
+  padding: 0.75rem 1rem;
+  border-radius: var(--border-radius) var(--border-radius) 0 0;
+}
+
+.modal-close-btn {
+  background: none;
+  border: none;
+  font-size: 1.8rem;
+  color: #fff;
+  cursor: pointer;
+  user-select: none;
+}
+
+.modal-body {
+  padding: 1rem 1.25rem 1.5rem 1.25rem;
+  overflow: auto;
+}
+
+.modal-row {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-row label {
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+}
+
+.modal-row input[type="text"] {
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--border-radius);
+  border: 1.5px solid #ddd;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.modal-row input[type="text"]:focus {
+  outline: none;
+  border-color: var(--red);
+}
+
+.coupon-instructions {
+  font-size: 0.9rem;
+  color: var(--dark-grey);
+  margin-top: -0.5rem;
+  margin-bottom: 1rem;
+  font-style: italic;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.booking-summary .summary-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem 0;
+  color: var(--dark-grey);
+}
+
+.booking-summary .summary-list li {
+  padding: 0.25rem 0;
+}
+
+.reviews-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.review-card {
+  box-shadow: 0 1px 5px var(--shadow);
+  padding: 0.75rem 1rem;
+  border-radius: var(--border-radius);
+  background: var(--light-grey);
+  user-select: none;
+}
+
+.review-card strong {
+  display: block;
+  margin-bottom: 0.3rem;
+  color: var(--red);
+}
+
+.more-reviews {
+  text-align: center;
+  font-style: italic;
+  color: var(--dark-grey);
+  user-select: none;
+}
+
+/* Sticky Mobile Search Button */
+.sticky-search-btn {
+  position: fixed;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 400px;
+  padding: 0.85rem 1rem;
+  background: var(--red);
+  color: #fff;
+  border-radius: var(--border-radius);
+  font-size: 1.3rem;
+  font-weight: 700;
+  box-shadow: 0 6px 14px rgba(211, 47, 47, 0.5);
+  z-index: 9999;
+  cursor: pointer;
+  border: none;
+  user-select: none;
+  transition: background-color 0.3s ease;
+}
+
+.sticky-search-btn:hover,
+.sticky-search-btn:focus {
+  background-color: var(--dark-red);
+  outline: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .search-form {
+    grid-template-columns: 1fr;
+  }
+
+  .trip-type-selector {
+    justify-content: center;
+  }
+
+  .car-list {
+    grid-template-columns: 1fr;
+  }
+
+  .highlights-grid {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  }
+
+  .features-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  }
+
+  .filter-group {
+    min-width: 100%;
+  }
+
+  .filter-options {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  .offer-card {
+    width: 100%;
+  }
+}
+
+
+
+
+
+
+// ZoomSearchPage.js
+import React, { useState, useEffect, useMemo } from "react";
+import "./CarHome.css";
+
+/** Dummy Data & Helpers **/
+
+const TRIP_TYPES = ["hourly", "outstation", "one_way", "round_trip"];
+const CAR_TYPES = ["Hatchback", "Sedan", "SUV"];
+const AC_OPTIONS = ["Any", "AC", "Non-AC"];
+const SORT_OPTIONS = [
+  { value: "", label: "None" },
+  { value: "priceAsc", label: "Price: Low to High" },
+  { value: "ratingDesc", label: "Rating: High to Low" },
+];
+
+// Helper: format date/time nicely
+function formatDateTime(dateStr) {
+  if (!dateStr) return "N/A";
+  try {
+    const dt = new Date(dateStr);
+    return dt.toLocaleString(undefined, {
+      dateStyle: "medium",
+      timeStyle: "short",
+    });
+  } catch {
+    return dateStr;
+  }
+}
+
+// Simple star rating display (full & half star)
+function StarRating({ rating }) {
+  const fullStars = Math.floor(rating);
+  const halfStar = rating - fullStars >= 0.5;
+  const stars = [];
+  for (let i = 0; i < fullStars; i++) {
+    stars.push(
+      <span key={"full" + i} aria-hidden="true" className="star">
+        ★
+      </span>
+    );
+  }
+  if (halfStar)
+    stars.push(
+      <span key="half" aria-hidden="true" className="star half-star">
+        ★
+      </span>
+    );
+  while (stars.length < 5) {
+    stars.push(
+      <span key={"empty" + stars.length} aria-hidden="true" className="star empty">
+        ☆
+      </span>
+    );
+  }
+  return (
+    <div className="stars" aria-label={`Rating: ${rating} out of 5 stars`}>
+      {stars}
+    </div>
+  );
+}
+
+/** Modal wrapper **/
+function Modal({ children, onClose, title, ariaLabel }) {
+  return (
+    <div
+      className="modal-backdrop"
+      role="dialog"
+      aria-modal="true"
+      aria-label={ariaLabel || title}
+      onClick={onClose}
+      tabIndex={-1}
+    >
+      <div
+        className="modal-content"
+        onClick={(e) => e.stopPropagation()}
+        tabIndex={0}
+      >
+        <header className="modal-header">
+          <h3>{title}</h3>
+          <button
+            className="modal-close-btn"
+            onClick={onClose}
+            aria-label="Close modal"
+          >
+            ×
+          </button>
+        </header>
+        <main className="modal-body">{children}</main>
+      </div>
+    </div>
+  );
+}
+
+/** Main Component **/
+const ZoomSearchPage = () => {
+  /** --- State --- **/
+  const [searchCriteria, setSearchCriteria] = useState({
+    tripType: "round_trip",
+    pickupLat: 13.02964527,
+    pickupLng: 80.22499673,
+    startDate: new Date().toISOString().slice(0, 16),
+    endDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000)
+      .toISOString()
+      .slice(0, 16),
+    carGroupId: null,
+  });
+
+  // Filters & Sort
+  const [filters, setFilters] = useState({
+    priceRange: [0, 10000], // price per day/trip in ₹
+    carType: "",
+    ac: "Any",
+    seats: 0,
+  });
+  const [sortOption, setSortOption] = useState("");
+
+  // Cars, loading, selection
+  const [cars, setCars] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedCar, setSelectedCar] = useState(null);
+
+  // Review modal
+  const [reviewsCarId, setReviewsCarId] = useState(null);
+
+  // Promo code modal and applied promo
+  const [promoCodeModalOpen, setPromoCodeModalOpen] = useState(false);
+  const [promoCodeInput, setPromoCodeInput] = useState("");
+  const [appliedPromo, setAppliedPromo] = useState(null);
+
+  // Edit search modal open
+  const [editSearchOpen, setEditSearchOpen] = useState(false);
+
+  /** --- Dummy Cars Data (simulate fetch) --- **/
+  const DUMMY_CARS = [
+    {
+      id: 1,
+      name: "Maruti Swift",
+      imageUrl:
+        "https://cdn.zoomcar.com/photographer/car/cars/maruti-swift.1573107005.png",
+      carType: "Hatchback",
+      seats: 5,
+      ac: true,
+      luggage: 2,
+      baseFarePerDay: 1800,
+      taxes: 300,
+      insurance: 150,
+      rating: 4.6,
+      reviewsCount: 124,
+      reviews: [
+        {
+          userInitials: "RS",
+          rating: 5,
+          comment: "Very smooth ride, clean car.",
+        },
+        {
+          userInitials: "AP",
+          rating: 4,
+          comment: "Good value for money.",
+        },
+        {
+          userInitials: "KM",
+          rating: 4.5,
+          comment: "Driver was punctual and friendly.",
+        },
+      ],
+      isFulfillmentCenter: true,
+    },
+    {
+      id: 2,
+      name: "Hyundai Verna",
+      imageUrl:
+        "https://cdn.zoomcar.com/photographer/car/cars/hyundai-verna.1573106668.png",
+      carType: "Sedan",
+      seats: 5,
+      ac: true,
+      luggage: 3,
+      baseFarePerDay: 2500,
+      taxes: 400,
+      insurance: 200,
+      rating: 4.9,
+      reviewsCount: 96,
+      reviews: [
+        {
+          userInitials: "NV",
+          rating: 5,
+          comment: "Luxurious and comfortable.",
+        },
+        {
+          userInitials: "SM",
+          rating: 5,
+          comment: "Excellent driving experience.",
+        },
+        {
+          userInitials: "CS",
+          rating: 4,
+          comment: "Car was clean but AC was a bit weak.",
+        },
+      ],
+      isFulfillmentCenter: false,
+    },
+    {
+      id: 3,
+      name: "Mahindra XUV 500",
+      imageUrl:
+        "https://cdn.zoomcar.com/photographer/car/cars/mahindra-xuv500.1573106743.png",
+      carType: "SUV",
+      seats: 7,
+      ac: true,
+      luggage: 5,
+      baseFarePerDay: 3500,
+      taxes: 600,
+      insurance: 300,
+      rating: 4.7,
+      reviewsCount: 57,
+      reviews: [
+        {
+          userInitials: "BR",
+          rating: 4,
+          comment: "Spacious SUV, perfect for family trips.",
+        },
+        {
+          userInitials: "PR",
+          rating: 5,
+          comment: "Power and comfort combined.",
+        },
+        {
+          userInitials: "AD",
+          rating: 4.5,
+          comment: "Good value for the price.",
+        },
+      ],
+      isFulfillmentCenter: true,
+    },
+    {
+      id: 4,
+      name: "Tata Tiago",
+      imageUrl:
+        "https://cdn.zoomcar.com/photographer/car/cars/tata-tiago.1573106827.png",
+      carType: "Hatchback",
+      seats: 5,
+      ac: false,
+      luggage: 2,
+      baseFarePerDay: 1600,
+      taxes: 280,
+      insurance: 140,
+      rating: 4.2,
+      reviewsCount: 32,
+      reviews: [
+        {
+          userInitials: "NV",
+          rating: 4,
+          comment: "Economical and efficient.",
+        },
+        {
+          userInitials: "MP",
+          rating: 4,
+          comment: "Basic but reliable car.",
+        },
+        {
+          userInitials: "KV",
+          rating: 3.5,
+          comment: "No AC is noticeable in summers.",
+        },
+      ],
+      isFulfillmentCenter: false,
+    },
+  ];
+
+  /** --- Simulate fetch --- **/
+  useEffect(() => {
+    setLoading(true);
+    const timer = setTimeout(() => {
+      setCars(DUMMY_CARS);
+      setLoading(false);
+    }, 900);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  /** --- Filter & Sort Logic --- **/
+  const filteredSortedCars = useMemo(() => {
+    if (!cars.length) return [];
+
+    let filtered = [...cars];
+
+    // Filter by Car Type
+    if (filters.carType) {
+      filtered = filtered.filter(
+        (c) => c.carType.toLowerCase() === filters.carType.toLowerCase()
+      );
+    }
+    // Filter by AC
+    if (filters.ac === "AC") {
+      filtered = filtered.filter((c) => c.ac === true);
+    } else if (filters.ac === "Non-AC") {
+      filtered = filtered.filter((c) => c.ac === false);
+    }
+    // Filter by Seats
+    if (filters.seats > 0) {
+      filtered = filtered.filter((c) => c.seats >= filters.seats);
+    }
+    // Filter by price range (consider total per day: baseFare + taxes + insurance)
+    filtered = filtered.filter((c) => {
+      const totalPrice =
+        c.baseFarePerDay + c.taxes + c.insurance;
+      return (
+        totalPrice >= filters.priceRange[0] &&
+        totalPrice <= filters.priceRange[1]
+      );
+    });
+
+    // Sort
+    if (sortOption === "priceAsc") {
+      filtered.sort(
+        (a, b) =>
+          a.baseFarePerDay + a.taxes + a.insurance -
+          (b.baseFarePerDay + b.taxes + b.insurance)
+      );
+    } else if (sortOption === "ratingDesc") {
+      filtered.sort((a, b) => b.rating - a.rating);
+    }
+
+    return filtered;
+  }, [cars, filters, sortOption]);
+
+  /** --- Handlers --- **/
+  function handleFilterChange(field, value) {
+    setFilters((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  }
+
+  function handleSortChange(e) {
+    setSortOption(e.target.value);
+  }
+
+  function openReviews(carId) {
+    setReviewsCarId(carId);
+  }
+
+  function closeReviews() {
+    setReviewsCarId(null);
+  }
+
+  function handleSelectCar(carId) {
+    const car = cars.find((c) => c.id === carId);
+    if (car) setSelectedCar(car);
+  }
+
+  function closeBookingSummary() {
+    setSelectedCar(null);
+  }
+
+  function handlePromoApply() {
+    const code = promoCodeInput.trim().toUpperCase();
+    // Simulate valid promo codes:
+    if (code === "ZOOM100") {
+      setAppliedPromo({ code: "ZOOM100", discount: 100 });
+      setPromoCodeModalOpen(false);
+      alert("Promo code applied! ₹100 OFF on your booking.");
+    } else {
+      alert("Invalid promo code.");
+    }
+  }
+
+  function removeAppliedPromo() {
+    setAppliedPromo(null);
+  }
+
+  function handleEditSearchOpen() {
+    setEditSearchOpen(true);
+  }
+
+  function handleEditSearchClose() {
+    setEditSearchOpen(false);
+  }
+
+  function handleSearchCriteriaChange(field, value) {
+    setSearchCriteria((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  }
+
+  function handleSearchUpdate(e) {
+    e.preventDefault();
+    // Here you would re-trigger search with new criteria
+    setEditSearchOpen(false);
+    alert("Search updated.");
+  }
+
+  /** Fare estimate helper **/
+  function calculateTotalFare(car) {
+    return car.baseFarePerDay + car.taxes + car.insurance;
+  }
+
+  /** Fare after promo **/
+  function calculateFareAfterPromo(car) {
+    const total = calculateTotalFare(car);
+    if (appliedPromo) {
+      return Math.max(0, total - appliedPromo.discount);
+    }
+    return total;
+  }
+
+  /** Format coordinates nicely **/
+  function formatCoordinates(lat, lng) {
+    return `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+  }
+
+  /** Price range slider min/max **/
+  const priceMin = 0;
+  const priceMax = 6000;
+
+  return (
+    <div className="zoom-page container" aria-live="polite">
+      {/* Search Criteria Header */}
+      <header className="search-header" aria-label="Search criteria">
+        <div className="criteria-info">
+          <div>
+            <strong>Trip Type:</strong>{" "}
+            {searchCriteria.tripType.replace("_", " ").toUpperCase()}
+          </div>
+          <div>
+            <strong>Pickup Coordinates:</strong>{" "}
+            {formatCoordinates(searchCriteria.pickupLat, searchCriteria.pickupLng)}
+          </div>
+          <div>
+            <strong>Start Date & Time:</strong>{" "}
+            {formatDateTime(searchCriteria.startDate)}
+          </div>
+          <div>
+            <strong>End Date & Time:</strong>{" "}
+            {formatDateTime(searchCriteria.endDate)}
+          </div>
+          <div>
+            <strong>Car Group:</strong>{" "}
+            {searchCriteria.carGroupId ? searchCriteria.carGroupId : "All"}
+          </div>
+        </div>
+        <button
+          type="button"
+          className="btn btn-secondary edit-search-btn"
+          onClick={handleEditSearchOpen}
+          aria-label="Edit search criteria"
+        >
+          Edit Search
+        </button>
+      </header>
+
+      {/* Filter Bar (Sticky at top) */}
+      <section className="filter-bar" aria-label="Car search filters">
+        {/* Price Range */}
+        <div className="filter-group">
+          <label htmlFor="priceRange">Price Range (₹):</label>
+          <input
+            type="range"
+            id="priceRange"
+            min={priceMin}
+            max={priceMax}
+            step={100}
+            value={filters.priceRange[1]}
+            onChange={(e) =>
+              handleFilterChange("priceRange", [priceMin, Number(e.target.value)])
+            }
+            aria-valuemin={priceMin}
+            aria-valuemax={priceMax}
+            aria-valuenow={filters.priceRange[1]}
+            aria-label="Filter by max price"
+          />
+          <div className="range-labels">
+            <span>{priceMin}</span>
+            <span>{filters.priceRange[1]}</span>
+          </div>
+        </div>
+
+        {/* Car Type */}
+        <div className="filter-group">
+          <label htmlFor="carTypeSelect">Car Type:</label>
+          <select
+            id="carTypeSelect"
+            value={filters.carType}
+            onChange={(e) => handleFilterChange("carType", e.target.value)}
+          >
+            <option value="">All</option>
+            {CAR_TYPES.map((t) => (
+              <option key={t} value={t}>
+                {t}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* AC toggle */}
+        <div className="filter-group">
+          <label htmlFor="acSelect">Air Conditioner:</label>
+          <select
+            id="acSelect"
+            value={filters.ac}
+            onChange={(e) => handleFilterChange("ac", e.target.value)}
+          >
+            {AC_OPTIONS.map((opt) => (
+              <option key={opt} value={opt}>
+                {opt}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Seat Count */}
+        <div className="filter-group">
+          <label htmlFor="seatsInput">Seats (Min):</label>
+          <input
+            id="seatsInput"
+            type="number"
+            min="0"
+            max="12"
+            value={filters.seats}
+            onChange={(e) => handleFilterChange("seats", Number(e.target.value))}
+          />
+        </div>
+
+        {/* Sort */}
+        <div className="filter-group sort-group">
+          <label htmlFor="sortSelect">Sort By:</label>
+          <select
+            id="sortSelect"
+            value={sortOption}
+            onChange={handleSortChange}
+            aria-label="Sort car results"
+          >
+            {SORT_OPTIONS.map(({ value, label }) => (
+              <option key={value || "none"} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
+        </div>
+      </section>
+
+      {/* Promotions Banner */}
+      <section className="promo-banner" aria-label="Promotions">
+        <div>
+          Use code{" "}
+          <strong>ZOOM100</strong> for ₹100 OFF your booking
+        </div>
+        <button
+          type="button"
+          className="btn btn-primary promo-apply-btn"
+          onClick={() => {
+            setPromoCodeInput("ZOOM100");
+            setPromoCodeModalOpen(true);
+          }}
+          aria-label="Apply promo code"
+        >
+          Apply Promo Code
+        </button>
+      </section>
+
+      {/* Cars Grid or loading/empty states */}
+      <section
+        className="car-grid-section"
+        aria-label="List of available cars"
+      >
+        {loading && (
+          <div className="loading-state" role="status" aria-live="polite">
+            <div className="spinner" aria-hidden="true"></div>
+            Loading cars...
+          </div>
+        )}
+
+        {!loading && filteredSortedCars.length === 0 && (
+          <div className="empty-state" role="alert">
+            No Cars Found matching your criteria.
+          </div>
+        )}
+
+        {!loading && filteredSortedCars.length > 0 && (
+          <div className="car-grid" role="list">
+            {filteredSortedCars.map((car) => {
+              const totalFare = calculateTotalFare(car);
+              const fareAfterPromo = calculateFareAfterPromo(car);
+              return (
+                <article
+                  key={car.id}
+                  className="car-card"
+                  role="listitem"
+                  tabIndex={0}
+                  aria-label={`${car.name}, ${car.carType}, ₹${totalFare} total fare`}
+                >
+                  <img
+                    src={car.imageUrl}
+                    alt={`Image of ${car.name}`}
+                    className="car-image"
+                    loading="lazy"
+                  />
+                  <h3 className="car-name">{car.name}</h3>
+
+                  <div className="car-icons">
+                    <span
+                      className={`car-icon ac-icon ${car.ac ? "ac" : "non-ac"}`}
+                      title={car.ac ? "Air Conditioner" : "No Air Conditioner"}
+                      aria-label={car.ac ? "AC enabled" : "No AC"}
+                    >
+                      ❄️
+                    </span>
+                    <span
+                      className="car-icon seats-icon"
+                      title={`${car.seats} seats`}
+                      aria-label={`${car.seats} seats`}
+                    >
+                      👥
+                    </span>
+                    <span
+                      className="car-icon luggage-icon"
+                      title={`${car.luggage} luggage capacity`}
+                      aria-label={`${car.luggage} luggage capacity`}
+                    >
+                      🧳
+                    </span>
+                  </div>
+
+                  <div className="car-rating-row" aria-label="Car rating">
+                    <StarRating rating={car.rating} />
+                    <span className="review-count">
+                      ({car.reviewsCount} reviews)
+                    </span>
+                  </div>
+
+                  {car.isFulfillmentCenter && (
+                    <div className="badge-assured" aria-label="Assured by Zoomcar">
+                      ✔ Assured by Zoomcar
+                    </div>
+                  )}
+
+                  <div className="fare-info" aria-live="polite">
+                    <div>
+                      Base Fare: ₹{car.baseFarePerDay.toLocaleString()}
+                    </div>
+                    <div>Taxes: ₹{car.taxes.toLocaleString()}</div>
+                    <div>Insurance: ₹{car.insurance.toLocaleString()}</div>
+                    <div className="fare-total">
+                      Total: ₹{totalFare.toLocaleString()}
+                      {appliedPromo && (
+                        <>
+                          {" "}
+                          <span className="fare-discounted">
+                            after promo: ₹{fareAfterPromo.toLocaleString()}
+                          </span>
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="car-actions">
+                    <button
+                      className="btn btn-secondary"
+                      type="button"
+                      onClick={() => openReviews(car.id)}
+                      aria-label={`View reviews for ${car.name}`}
+                    >
+                      View Reviews
+                    </button>
+                    <button
+                      className="btn btn-primary"
+                      type="button"
+                      onClick={() => handleSelectCar(car.id)}
+                      aria-label={`Select ${car.name} for booking`}
+                    >
+                      Select
+                    </button>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        )}
+      </section>
+
+      {/* Reviews Modal */}
+      {reviewsCarId !== null && (
+        <Modal
+          title="User Reviews"
+          onClose={closeReviews}
+          ariaLabel="Car reviews modal"
+        >
+          {(() => {
+            const car = cars.find((c) => c.id === reviewsCarId);
+            if (!car) return <p>No reviews found.</p>;
+            return (
+              <>
+                <h4>{car.name}</h4>
+                <div className="reviews-list">
+                  {car.reviews.slice(0, 3).map(({ userInitials, rating, comment }, i) => (
+                    <div key={i} className="review-card">
+                      <div className="review-user-initials">{userInitials}</div>
+                      <StarRating rating={rating} />
+                      <p className="review-comment">{comment}</p>
+                    </div>
+                  ))}
+                  {car.reviews.length > 3 && (
+                    <p className="more-reviews">
+                      And {car.reviews.length - 3} more reviews...
+                    </p>
+                  )}
+                </div>
+              </>
+            );
+          })()}
+        </Modal>
+      )}
+
+      {/* Booking Summary Drawer */}
+      {selectedCar && (
+        <aside
+          className="booking-summary"
+          aria-label="Booking summary drawer"
+          role="region"
+        >
+          <header className="booking-summary-header">
+            <h3>Your Booking Summary</h3>
+            <button
+              className="modal-close-btn"
+              onClick={closeBookingSummary}
+              aria-label="Close booking summary"
+            >
+              ×
+            </button>
+          </header>
+          <div className="booking-summary-content">
+            <img
+              src={selectedCar.imageUrl}
+              alt={`Image of selected car: ${selectedCar.name}`}
+              className="summary-car-image"
+              loading="lazy"
+            />
+            <h4>{selectedCar.name}</h4>
+
+            <ul className="summary-list">
+              <li>
+                <strong>Trip Type:</strong> {searchCriteria.tripType.replace("_", " ")}
+              </li>
+              <li>
+                <strong>Pickup Coordinates:</strong>{" "}
+                {formatCoordinates(searchCriteria.pickupLat, searchCriteria.pickupLng)}
+              </li>
+              <li>
+                <strong>Start Date & Time:</strong> {formatDateTime(searchCriteria.startDate)}
+              </li>
+              <li>
+                <strong>End Date & Time:</strong> {formatDateTime(searchCriteria.endDate)}
+              </li>
+              <li>
+                <strong>Car Type:</strong> {selectedCar.carType}
+              </li>
+              <li>
+                <strong>Seats:</strong> {selectedCar.seats}
+              </li>
+              <li>
+                <strong>AC:</strong> {selectedCar.ac ? "Yes" : "No"}
+              </li>
+              <li>
+                <strong>Total Fare:</strong> ₹{calculateTotalFare(selectedCar).toLocaleString()}
+                {appliedPromo && (
+                  <>
+                    {" "}
+                    <span className="fare-discounted">
+                      (After promo: ₹
+                      {calculateFareAfterPromo(selectedCar).toLocaleString()})
+                    </span>
+                  </>
+                )}
+              </li>
+              {appliedPromo && (
+                <li>
+                  <strong>Applied Promo:</strong> {appliedPromo.code}{" "}
+                  <button
+                    className="btn-remove-promo"
+                    onClick={removeAppliedPromo}
+                    aria-label="Remove applied promo"
+                    type="button"
+                  >
+                    ×
+                  </button>
+                </li>
+              )}
+            </ul>
+
+            <button
+              className="btn btn-primary proceed-booking-btn"
+              onClick={() =>
+                alert(`Booking confirmed for ${selectedCar.name}. Thank you!`)
+              }
+              aria-label="Proceed to book selected car"
+            >
+              Proceed to Book
+            </button>
+          </div>
+        </aside>
+      )}
+
+      {/* Promo Code Modal */}
+      {promoCodeModalOpen && (
+        <Modal
+          title="Apply Promotion Code"
+          onClose={() => setPromoCodeModalOpen(false)}
+          ariaLabel="Promo code input modal"
+        >
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handlePromoApply();
+            }}
+          >
+            <label htmlFor="promoCodeInput">
+              Enter Promo Code:
+            </label>
+            <input
+              id="promoCodeInput"
+              type="text"
+              value={promoCodeInput}
+              onChange={(e) => setPromoCodeInput(e.target.value.toUpperCase())}
+              autoFocus
+              aria-describedby="promoCodeHelp"
+            />
+            <small id="promoCodeHelp" className="promo-help">
+              E.g. ZOOM100 for ₹100 OFF
+            </small>
+            <div className="modal-actions">
+              <button type="submit" className="btn btn-primary">
+                Apply
+              </button>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => setPromoCodeModalOpen(false)}
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </Modal>
+      )}
+
+      {/* Edit Search Modal */}
+      {editSearchOpen && (
+        <Modal
+          title="Edit Search Criteria"
+          onClose={handleEditSearchClose}
+          ariaLabel="Edit search modal"
+        >
+          <form onSubmit={handleSearchUpdate} className="edit-search-form">
+            <div className="form-row">
+              <label htmlFor="tripTypeSelect">Trip Type</label>
+              <select
+                id="tripTypeSelect"
+                value={searchCriteria.tripType}
+                onChange={(e) =>
+                  handleSearchCriteriaChange("tripType", e.target.value)
+                }
+              >
+                {TRIP_TYPES.map((t) => (
+                  <option key={t} value={t}>
+                    {t.replace("_", " ")}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="form-row">
+              <label htmlFor="pickupLat">Pickup Latitude</label>
+              <input
+                id="pickupLat"
+                type="number"
+                step="any"
+                value={searchCriteria.pickupLat}
+                onChange={(e) =>
+                  handleSearchCriteriaChange("pickupLat", parseFloat(e.target.value))
+                }
+                required
+              />
+            </div>
+
+            <div className="form-row">
+              <label htmlFor="pickupLng">Pickup Longitude</label>
+              <input
+                id="pickupLng"
+                type="number"
+                step="any"
+                value={searchCriteria.pickupLng}
+                onChange={(e) =>
+                  handleSearchCriteriaChange("pickupLng", parseFloat(e.target.value))
+                }
+                required
+              />
+            </div>
+
+            <div className="form-row">
+              <label htmlFor="startDate">Start Date & Time</label>
+              <input
+                id="startDate"
+                type="datetime-local"
+                value={searchCriteria.startDate}
+                onChange={(e) =>
+                  handleSearchCriteriaChange("startDate", e.target.value)
+                }
+                required
+              />
+            </div>
+
+            <div className="form-row">
+              <label htmlFor="endDate">End Date & Time</label>
+              <input
+                id="endDate"
+                type="datetime-local"
+                value={searchCriteria.endDate}
+                onChange={(e) =>
+                  handleSearchCriteriaChange("endDate", e.target.value)
+                }
+                required
+              />
+            </div>
+
+            <div className="form-row">
+              <label htmlFor="carGroupId">Car Group Id (Optional)</label>
+              <input
+                id="carGroupId"
+                type="text"
+                value={searchCriteria.carGroupId || ""}
+                onChange={(e) =>
+                  handleSearchCriteriaChange("carGroupId", e.target.value || null)
+                }
+                placeholder="All groups"
+              />
+            </div>
+
+            <div className="modal-actions">
+              <button type="submit" className="btn btn-primary">
+                Update Search
+              </button>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={handleEditSearchClose}
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </Modal>
+      )}
+    </div>
+  );
+};
+
+export default ZoomSearchPage;
+
+
+
+
+
+
+
+/* ZoomSearchPage.css */
+:root {
+  --zoom-green: #1ba94c;
+  --zoom-green-dark: #16893f;
+  --white: #fff;
+  --light-grey: #f2f2f2;
+  --dark-grey: #333;
+  --medium-grey: #666;
+  --shadow: rgba(0, 0, 0, 0.12);
+  --border-radius: 10px;
+  --transition: 0.25s ease;
+  --font-sans: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background: var(--white);
+  color: var(--dark-grey);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.zoom-page.container {
+  max-width: 1200px;
+  margin: 2rem auto 4rem auto;
+  padding: 0 1rem;
+}
+
+/* Search Criteria Header */
+.search-header {
+  background: var(--white);
+  padding: 1rem 1.5rem;
+  border-radius: var(--border-radius);
+  box-shadow: 0 3px 10px var(--shadow);
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.criteria-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 2rem;
+  font-size: 0.9rem;
+  color: var(--medium-grey);
+  min-width: 250px;
+  max-width: 70%;
+}
+
+.criteria-info > div {
+  white-space: nowrap;
+}
+
+.edit-search-btn {
+  background-color: var(--white);
+  border: 2px solid var(--zoom-green);
+  color: var(--zoom-green);
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.95rem;
+  border-radius: var(--border-radius);
+  padding: 0.5rem 1rem;
+  transition: background-color var(--transition), color var(--transition);
+  min-width: 130px;
+  text-align: center;
+  user-select: none;
+}
+
+.edit-search-btn:hover,
+.edit-search-btn:focus {
+  background-color: var(--zoom-green);
+  color: var(--white);
+  outline: none;
+}
+
+/* Filter Bar */
+.filter-bar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--white);
+  padding: 1rem 1.5rem;
+  border-radius: var(--border-radius);
+  box-shadow: 0 3px 8px var(--shadow);
+  margin-bottom: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 2rem;
+  align-items: center;
+  font-size: 0.9rem;
+  color: var(--medium-grey);
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  min-width: 150px;
+}
+
+.filter-group label {
+  margin-bottom: 0.4rem;
+  font-weight: 600;
+  color: var(--dark-grey);
+}
+
+.filter-group select,
+.filter-group input[type="number"],
+.filter-group input[type="range"] {
+  padding: 0.3rem 0.5rem;
+  border-radius: var(--border-radius);
+  border: 1.5px solid #ccc;
+  font-size: 0.9rem;
+  transition: border-color 0.3s ease;
+}
+
+.filter-group select:focus,
+.filter-group input[type="number"]:focus,
+.filter-group input[type="range"]:focus {
+  outline: none;
+  border-color: var(--zoom-green);
+}
+
+/* Range slider styling */
+input[type="range"] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 5px;
+  background: #ddd;
+  cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  background: var(--zoom-green);
+  cursor: pointer;
+  margin-top: -7px;
+  transition: background-color var(--transition);
+}
+
+input[type="range"]:focus::-webkit-slider-thumb {
+  background-color: var(--zoom-green-dark);
+  outline: none;
+}
+
+.range-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  margin-top: 0.15rem;
+  color: var(--medium-grey);
+}
+
+/* Promo Banner */
+.promo-banner {
+  background-color: #e2f1dd;
+  border: 1.5px solid var(--zoom-green);
+  border-radius: var(--border-radius);
+  color: var(--zoom-green-dark);
+  padding: 1rem 1.5rem;
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.promo-apply-btn {
+  background-color: var(--zoom-green);
+  border: none;
+  color: var(--white);
+  font-weight: 700;
+  border-radius: var(--border-radius);
+  padding: 0.5rem 1.25rem;
+  cursor: pointer;
+  transition: background-color var(--transition);
+  user-select: none;
+}
+
+.promo-apply-btn:hover,
+.promo-apply-btn:focus {
+  background-color: var(--zoom-green-dark);
+  outline: none;
+}
+
+/* Cars Grid */
+.car-grid-section {
+  min-height: 240px;
+}
+
+.loading-state,
+.empty-state {
+  text-align: center;
+  font-weight: 600;
+  margin: 3rem 0;
+  color: var(--medium-grey);
+}
+
+.spinner {
+  margin: 0 auto 1rem auto;
+  border: 5px solid #e7e7e7;
+  border-top: 5px solid var(--zoom-green);
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.car-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Car Card */
+.car-card {
+  background: var(--white);
+  box-shadow: 0 3px 12px var(--shadow);
+  border-radius: var(--border-radius);
+  padding: 1rem 1rem 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  user-select: none;
+  transition: box-shadow var(--transition), transform var(--transition);
+  cursor: default;
+  outline-offset: 3px;
+}
+
+.car-card:focus,
+.car-card:hover {
+  box-shadow: 0 10px 25px rgba(27, 169, 76, 0.4);
+  outline: none;
+  transform: translateY(-5px);
+}
+
+.car-image {
+  width: 100%;
+  height: 140px;
+  object-fit: contain;
+  border-radius: var(--border-radius);
+  margin-bottom: 0.75rem;
+  background-color: #f9f9f9;
+}
+
+.car-name {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--zoom-green);
+  margin-bottom: 0.6rem;
+  min-height: 44px;
+}
+
+.car-icons {
+  font-size: 1.2rem;
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0.7rem;
+  color: var(--medium-grey);
+  justify-content: flex-start;
+}
+
+.car-icon {
+  user-select: none;
+}
+
+.ac-icon.ac {
+  color: var(--zoom-green);
+}
+
+.ac-icon.non-ac {
+  color: #999;
+  opacity: 0.6;
+}
+
+.car-rating-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.8rem;
+  color: #444;
+  font-size: 0.85rem;
+}
+
+.stars {
+  color: #fbc02d;
+  font-size: 1.1rem;
+  display: flex;
+  gap: 0.04rem;
+  user-select: none;
+}
+
+.star {
+  display: inline-block;
+  line-height: 1rem;
+}
+
+.star.empty {
+  color: #ddd;
+}
+
+.star.half-star {
+  position: relative;
+  color: #fbc02d;
+  background: linear-gradient(90deg, #fbc02d 50%, #ddd 50%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.review-count {
+  font-size: 0.8rem;
+  color: var(--medium-grey);
+}
+
+.badge-assured {
+  background-color: #daf9de;
+  color: #2a802a;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 20px;
+  align-self: flex-start;
+  margin-bottom: 0.75rem;
+  user-select: none;
+}
+
+.fare-info {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--zoom-green-dark);
+  margin-bottom: 1rem;
+  user-select: none;
+  line-height: 1.3;
+}
+
+.fare-total {
+  font-weight: 900;
+  font-size: 1.1rem;
+  margin-top: 0.3rem;
+  color: var(--zoom-green);
+}
+
+.fare-discounted {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #34a853;
+  margin-left: 0.5rem;
+}
+
+.car-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: auto;
+  flex-wrap: wrap;
+}
+
+.btn {
+  font-weight: 700;
+  padding: 0.45rem 1rem;
+  border-radius: var(--border-radius);
+  border: none;
+  cursor: pointer;
+  flex: 1 1 auto;
+  min-width: 100px;
+  transition: background-color var(--transition);
+  user-select: none;
+}
+
+.btn-primary {
+  background-color: var(--zoom-green);
+  color: var(--white);
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+  background-color: var(--zoom-green-dark);
+  outline: none;
+}
+
+.btn-secondary {
+  background-color: var(--light-grey);
+  color: var(--medium-grey);
+}
+
+.btn-secondary:hover,
+.btn-secondary:focus {
+  background-color: #d8d8d8;
+  outline: none;
+}
+
+/* Reviews Modal */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9000;
+  padding: 1rem;
+  overflow-y: auto;
+}
+
+.modal-content {
+  background: var(--white);
+  border-radius: var(--border-radius);
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 0 25px rgba(27, 169, 76, 0.7);
+  outline: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--zoom-green);
+  color: #fff;
+  padding: 0.75rem 1rem;
+  border-radius: var(--border-radius) var(--border-radius) 0 0;
+}
+
+.modal-close-btn {
+  background: none;
+  border: none;
+  font-size: 1.8rem;
+  color: #fff;
+  cursor: pointer;
+  user-select: none;
+}
+
+.modal-body {
+  padding: 1rem 1.25rem 1.5rem 1.25rem;
+  overflow: auto;
+}
+
+.reviews-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.review-card {
+  box-shadow: 0 1px 5px var(--shadow);
+  padding: 0.75rem 1rem;
+  border-radius: var(--border-radius);
+  background: var(--light-grey);
+  user-select: none;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.review-user-initials {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  background-color: var(--zoom-green);
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.3rem;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  user-select: none;
+}
+
+.review-comment {
+  margin: 0;
+  color: var(--dark-grey);
+  flex-grow: 1;
+}
+
+.more-reviews {
+  text-align: center;
+  font-style: italic;
+  color: var(--medium-grey);
+  user-select: none;
+  margin-top: 0.3rem;
+}
+
+/* Booking Summary Drawer */
+.booking-summary {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  max-height: 80vh;
+  background: var(--white);
+  border-top-left-radius: var(--border-radius);
+  border-top-right-radius: var(--border-radius);
+  box-shadow: 0 -5px 15px rgba(27, 169, 76, 0.4);
+  padding: 1.5rem 1.5rem 2rem 1.5rem;
+  z-index: 9000;
+  display: flex;
+  flex-direction: column;
+  animation: slideUp 0.3s ease forwards;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.booking-summary-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.booking-summary-content {
+  overflow-y: auto;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.summary-car-image {
+  max-width: 200px;
+  max-height: 120px;
+  object-fit: contain;
+  border-radius: var(--border-radius);
+  align-self: center;
+  background-color: #f9f9f9;
+}
+
+.summary-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  color: var(--dark-grey);
+  font-size: 0.95rem;
+}
+
+.summary-list li {
+  margin-bottom: 0.45rem;
+}
+
+.proceed-booking-btn {
+  margin-top: auto;
+  padding: 0.8rem 1rem;
+  font-size: 1.1rem;
+}
+
+/* Promo Modal - reuse modal styles */
+/* Edit Search Modal - reuse modal styles */
+
+/* Responsive */
+@media (max-width: 768px) {
+  .filter-bar {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .criteria-info {
+    max-width: 100%;
+    justify-content: space-between;
+  }
+
+  .car-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .car-name {
+    min-height: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .promo-banner {
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+  }
+
+  .promo-apply-btn {
+    width: 100%;
+  }
+}
+
+
+
